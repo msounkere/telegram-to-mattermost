@@ -44,10 +44,10 @@ def export_telegram(args):
     # Create the client and connect
     client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
     if client.start(phone=tlphone):
-        print("\n\n>> Authentification reussie pour le user : " + tlusername)
+        print("\n>> Authentification reussie pour le user : " + tlusername)
         print("------------------------------------------------------------------------------------------------\n")
     else:
-        print("\n\n>> Echec de l'authentification pour le user : " + tlusername)
+        print("\n>> Echec de l'authentification pour le user : " + tlusername)
         print("------------------------------------------------------------------------------------------------\n")
 
     # Ensure you're authorized
