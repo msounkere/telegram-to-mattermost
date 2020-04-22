@@ -2,8 +2,8 @@ import os
 import configparser
 import json
 import os
-import mattermost
 import datetime
+import requests
 from export_telegram import DateTimeEncoder
 
 # Reading Configs
@@ -11,15 +11,10 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 # Setting configuration values
-username = config['Mattermost']['username']
-password = config['Mattermost']['password']
 url_server = config['Mattermost']['url_server']
 bearer_token = config['Mattermost']['bearer_token']
 
 media_files = config['Telegram']['media_files']
-
-mm = mattermost.MMApi(url_server)
-#mm.login(username, password)
 
 def timestamp_from_date(date):
     d = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ %f")
@@ -49,41 +44,101 @@ def get_tl_username_from_file(dir_users,id):
                 return tluser['user']
 
 def get_mmteam_id(team_name):
-    for team in mm.get_teams():
-        if team['name'] == team_name and team['delete_at'] == 0:
-            return team['id']
+    url = url_server + "/v4/teams/name/" + team_name
+    payload = {}
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    }
+    resp = requests.request("GET", url, headers=headers, data = payload)
+    team = resp.json()
+    if resp.status_code == 200:
+        return team['id']
+    else:
+        return False
+    
 
 def get_mmuser_id(username):
-    for user in mm.get_users():
-        if user['username'] == username and user['delete_at'] == 0:
-            return user['id']
+    url = url_server + "/v4/users/username/" + username
+    payload = {}
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    }
+    resp = requests.request("GET", url, headers=headers, data = payload)
+    user = resp.json()
+    if resp.status_code == 200:
+        return user['id']
+    else:
+        return False
 
-def get_mmchannel_id(team_id,user_id,channel_name):
-    for channel in mm.get_channels_for_user(user_id,team_id):
-        if channel['name'] == channel_name and channel['delete_at'] == 0 and channel['type'] != 'D':
-            return channel['id']
+def get_mmchannel_id(team_id,channel_name):
+    url = url_server + "/v4/teams/" + team_id + "/channels/name/" + channel_name
+    payload = {}
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    }
+    resp = requests.request("GET", url, headers=headers, data = payload)
+    channel = resp.json()
+    if resp.status_code == 200:
+        return channel['id']
+    else:
+        return False
 
 def create_mmuser(email,username,firstname,lastname):
-
-    import requests
     url = url_server + "/v4/users"
     payload = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"first_name\": \"" + firstname + "\", \"last_name\": \"" + lastname + "\", \"password\": \"Default@1545\", \"locale\": \"fr\"}"
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     'Content-Type': 'application/json'
     }
-    requests.request("POST", url, headers=headers, data = payload)
+    resp = requests.request("POST", url, headers=headers, data = payload)
+    if resp.status_code == 400:
+        return False
+
+def create_mmchannel(team_id,channel_name,channel_display_name,type_channel):
+    url = url_server + "/v4/channels"
+    payload = "{\"team_id\": \"" + team_id + "\", \"name\": \"" + channel_name + "\",\"display_name\": \"" + channel_display_name + "\",\"type\": \"" + type_channel + "\"}"
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    'Content-Type': 'application/json'
+    }
+    resp = requests.request("POST", url, headers=headers, data = payload)
+    if resp.status_code == 400:
+        return False
+
+def add_user_to_mmteam(team_id, user_id):
+    url = url_server + "/v4/teams/" + team_id + "/members"
+    payload = "{\"team_id\": \"" + team_id + "\", \"user_id\": \"" + user_id + "\"}"
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    'Content-Type': 'application/json'
+    }
+    resp = requests.request("POST", url, headers=headers, data = payload)
+    if resp.status_code == 400:
+        return False
+
+def add_user_to_mmchannel(channel_id,user_id):
+    url = url_server + "/v4/channels/" + channel_id + "/members"
+    payload = "{\"user_id\": \"" + user_id + "\"}"
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    'Content-Type': 'application/json'
+    }
+    resp = requests.request("POST", url, headers=headers, data = payload)
+    if resp.status_code == 400:
+        return False
 
 def import_mattermost(channel_name,args):
-    mm.login(args.mmusername, args.mmpassword)
+
     # Check if channel exists
     team_id = get_mmteam_id(args.mmteam)
-    user_id = get_mmuser_id(args.mmusername)
+    if not team_id:
+        print("Error : Team: " + args.mmteam + " Introuvable")
+        exit(0)
 
     if args.mmchannel == "False":
         channel = False
     else:
-        channel_id = get_mmchannel_id(team_id,user_id,args.mmchannel)
+        channel_id = get_mmchannel_id(team_id,args.mmchannel)
         channel = True
 
     print("------------------------------------------------------------------------------------------------")
@@ -92,17 +147,17 @@ def import_mattermost(channel_name,args):
 
     ## Control de l'existance du groupe de destination/ Creer le groupe si inexistant
     if channel:
-        if channel_id == None:
+        if not channel_id:
             channel = True
             # Creation du canal
             print(">>>> Creation du channel car inexistant ...")
-            data = mm.create_channel(team_id, args.mmchannel, args.mmchannel, purpose="", header="", type="P")
-            if data['id'] == "store.sql_channel.save_channel.exists.app_error":
+            state = create_mmchannel(team_id,args.mmchannel,args.mmchannel,"P")
+            if not state:
                 print(">>>> La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
                 exit(0)
             else:
-                channel_id = get_mmchannel_id(team_id,user_id,args.mmchannel)
-                if channel_id == None:
+                channel_id = get_mmchannel_id(team_id,args.mmchannel)
+                if not channel_id:
                     print(">>>> Echec lors de la création du channel : " + args.mmchannel)
                     exit(0)
 
@@ -127,11 +182,11 @@ def import_mattermost(channel_name,args):
                 user_id = get_mmuser_id(mmuser['mattermost'])
                 # join User to Team
                 print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-                mm.add_user_to_team(team_id, user_id)
+                add_user_to_mmteam(team_id, user_id)
                 # join User to group
                 if channel:
                     print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                    mm.add_user_to_channel(channel_id, user_id)
+                    add_user_to_mmchannel(channel_id, user_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
