@@ -1,0 +1,30 @@
+[{
+    "firstname" : "Mohamed E.",
+    "lastname" : "SOUNKERE",
+    "email" : "sounkere@veone.net",
+    "telegram" : "msounkere",
+    "mattermost" : "msounkere"
+    },
+    {
+    "firstname" : "Fanny",
+    "lastname" : "CISSE",
+    "email" : "fanny.cisse@veone.net",
+    "telegram" : "fannyc",
+    "mattermost" : "fcisse"
+    },
+    {
+    "firstname" : "Emmanuel A.",
+    "lastname" : "ASSOKO",
+    "email" : "assoko.em@veone.net",
+    "telegram" : "AssokoEm",
+    "mattermost" : "eassoko"
+    },
+    {
+    "firstname" : "Faycalath A.",
+    "lastname" : "OUATTARA",
+    "email" : "faycalath.ouattara@veone.net",
+    "telegram" : "Ouattarafaycalath",
+    "mattermost" : "fouattara"
+    }
+    
+]
