@@ -14,7 +14,8 @@ config.read("config.ini")
 url_server = config['Mattermost']['url_server']
 bearer_token = config['Mattermost']['bearer_token']
 
-media_files = config['Telegram']['media_files']
+currentdir = os.getcwd()
+media_files = currentdir + "/" + config['Telegram']['media_files']
 
 def timestamp_from_date(date):
     d = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")

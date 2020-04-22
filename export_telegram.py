@@ -8,6 +8,21 @@ from telethon import TelegramClient , events, sync
 from telethon.errors import SessionPasswordNeededError
 from telethon import utils
 
+# Reading Configs
+tlconfig = configparser.ConfigParser()
+tlconfig.read("config.ini")
+
+# Setting configuration values
+tlapi_id = tlconfig['Telegram']['api_id']
+tlapi_hash = tlconfig['Telegram']['api_hash']
+tlapi_hash = str(tlapi_hash)
+
+currentdir = os.getcwd()
+media_files = currentdir + "/" + tlconfig['Telegram']['media_files']
+# bot_token = tlconfig['Telegram']['bot_token']
+limit = tlconfig['Telegram']['limit']
+tltotal_count_limit = tlconfig['Telegram']['total_count_limit']
+
 # some functions to parse json date
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):   # pylint: disable=E0202
@@ -22,25 +37,10 @@ class DateTimeEncoder(json.JSONEncoder):
 
 def export_telegram(args):
 
-    # Reading Configs
-    tlconfig = configparser.ConfigParser()
-    tlconfig.read("config.ini")
-
-    # Setting configuration values
-    tlapi_id = tlconfig['Telegram']['api_id']
-    tlapi_hash = tlconfig['Telegram']['api_hash']
-    tlapi_hash = str(tlapi_hash)
-
     tlphone = args.tlphone
     tlusername = args.tlusername
     tluser_input_channel = args.tlchannel
-
-    media_files = tlconfig['Telegram']['media_files']
-    # bot_token = tlconfig['Telegram']['bot_token']
-    limit = tlconfig['Telegram']['limit']
-    tltotal_count_limit = tlconfig['Telegram']['total_count_limit']
-
-       
+    
     # Create the client and connect
     client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
     if client.start(phone=tlphone):

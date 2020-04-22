@@ -48,7 +48,7 @@ usage: migrate.py [-h] [--tlusername TLUSERNAME] [--tlphone TLPHONE]
 ```
 - Transférer les données dans Mattermost par le méthode BULK JSON
 ```bash
-shell> /mattermost/bin/mattermost import bulk /opt/telegram-to-mattermost/media/1192446106/mattermost_data.json --appl
+shell> sudo /mattermost/bin/mattermost import bulk /opt/telegram-to-mattermost/media/1192446106/mattermost_data.json --appl
 ```
 Vous retrouverez toutes vos conversations dans Mattermost
 Vive l'Opensource !!!
