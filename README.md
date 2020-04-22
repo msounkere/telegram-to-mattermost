@@ -1,7 +1,7 @@
 
 # Script pour la migration de Telegram -> Mattermost
 ## 1 - Installation des dépendances
-Requirements
+- Requirements
  1. Votre server mattermost doit être installé et fonctionnel  
  2. Disposer des API Télegram ( [https://core.telegram.org/api/obtaining_api_id](https://core.telegram.org/api/obtaining_api_id) )
  3. Diposer  d'une clé Bearer Token mattermost ( [https://docs.mattermost.com/developer/personal-access-tokens.html](https://docs.mattermost.com/developer/personal-access-tokens.html) )
