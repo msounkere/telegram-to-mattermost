@@ -28,8 +28,7 @@ def get_attachments(pathdir):
         attachements.append({
             "path": pathdir + '/' + attachement,
         })
-    # return attachements
-    return []
+    return attachements
 
 def get_mmuser_from_file(tl_user):
     with open("list.json") as tlusers_file:

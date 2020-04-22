@@ -68,7 +68,6 @@ def export_telegram(args):
         exit(0)
 
     tlchannel = client.get_entity(tluser_input_channel)
-    print(tlchannel.id)
     tlchannel_name = utils.get_display_name(tlchannel)
 
     ## Reinitialisation du repertoire de donnée
