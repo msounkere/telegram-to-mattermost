@@ -1,0 +1,43 @@
+[2020.04.19 00:37:32] Launched version: 2000001, install beta: [FALSE], alpha: 0, debug mode: [FALSE], test dc: [FALSE]
+[2020.04.19 00:37:32] Executable dir: C:/Users/sounk/AppData/Roaming/Telegram Desktop/, name: Telegram.exe
+[2020.04.19 00:37:32] Initial working dir: C:/Users/sounk/AppData/Roaming/Telegram Desktop/
+[2020.04.19 00:37:32] Working dir: C:/Users/sounk/AppData/Roaming/Telegram Desktop/
+[2020.04.19 00:37:32] Command line: C:\Users\sounk\AppData\Roaming\Telegram Desktop\Telegram.exe
+[2020.04.19 00:37:32] Executable path before check: C:/Users/sounk/AppData/Roaming/Telegram Desktop/Telegram.exe
+[2020.04.19 00:37:32] Logs started
+[2020.04.19 00:37:32] Connecting local socket to Global\80901323fcaafcb0f4f199d945866673-{87A94AB0-E370-4cde-98D3-ACC110C5967D}...
+[2020.04.19 00:37:32] This is the only instance of Telegram, starting server and app...
+[2020.04.19 00:37:32] Moved logging from 'C:/Users/sounk/AppData/Roaming/Telegram Desktop/log_start0.txt' to 'C:/Users/sounk/AppData/Roaming/Telegram Desktop/log.txt'!
+[2020.04.19 00:37:32] Opened 'C:/Users/sounk/AppData/Roaming/Telegram Desktop/tdata/working' for reading, the previous Telegram Desktop launch was not finished properly :( Crash log size: 0
+[2020.04.19 00:37:32] Primary screen DPI: 168
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansRegular.ttf' loaded 'DAOpenSansRegular'
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansRegularItalic.ttf' loaded 'DAOpenSansRegularItalic'
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansBold.ttf' loaded 'DAOpenSansBold'
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansBoldItalic.ttf' loaded 'DAOpenSansBoldItalic'
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansSemibold.ttf' loaded 'DAOpenSansSemibold'
+[2020.04.19 00:37:33] Font: from ':/gui/fonts/DAOpenSansSemiboldItalic.ttf' loaded 'DAOpenSansSemiboldItalic'
+[2020.04.19 00:37:33] App Info: reading settings...
+[2020.04.19 00:37:33] App Info: reading encrypted settings...
+[2020.04.19 00:37:33] Lang Info: Loaded cached, keys: 2652
+[2020.04.19 00:37:33] OpenAL Logging Level: (not set)
+[2020.04.19 00:37:33] Audio Playback Devices: OpenAL Soft on Haut-parleurs (Realtek High Definition Audio(SST));OpenAL Soft on Haut-parleurs (EPSON Projector UD Audio Device)
+[2020.04.19 00:37:33] Audio Playback Default Device: OpenAL Soft on Haut-parleurs (Realtek High Definition Audio(SST))
+[2020.04.19 00:37:33] Audio Capture Devices: OpenAL Soft on RÃ©seau de microphones (Realtek High Definition Audio(SST))
+[2020.04.19 00:37:33] Audio Capture Default Device: OpenAL Soft on RÃ©seau de microphones (Realtek High Definition Audio(SST))
+[2020.04.19 00:37:33] App Info: reading map...
+[2020.04.19 00:37:33] App Info: reading encrypted map...
+[2020.04.19 00:37:34] App Info: reading encrypted user settings...
+[2020.04.19 00:37:34] App Info: encrypted user settings read.
+[2020.04.19 00:37:34] App Info: reading encrypted mtp data...
+[2020.04.19 00:37:34] MTP Info: read keys, current: 5, to destroy: 0
+[2020.04.19 00:37:34] Map read time: 88
+[2020.04.19 00:37:34] Export Info: Destroy top bar by controller removal.
+[2020.04.19 00:37:35] Window Shadow: 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4, 6, 8, 10, 13, 15, 19, 22, 25, 28, 32, 34, 42
+[2020.04.19 01:52:17] RPC Error: request 233 got fail with code 400, error USERNAME_INVALID
+[2020.04.19 01:52:31] RPC Error: request 235 got fail with code 400, error USERNAME_INVALID
+[2020.04.19 01:57:04] RPC Error: request 279 got fail with code 400, error USERNAME_INVALID
+[2020.04.19 01:57:25] RPC Error: request 288 got fail with code 400, error USERNAME_INVALID
+[2020.04.19 05:23:13] Could not send ping for some seconds, restarting...
+[2020.04.19 05:39:03] App Info: writing encrypted user settings...
+[2020.04.19 06:02:18] RPC Error: request 381 got fail with code 400, error USERNAME_INVALID
+[2020.04.19 06:03:56] Skipping message, because it is already in blocks!

@@ -17,8 +17,9 @@ bearer_token = config['Mattermost']['bearer_token']
 media_files = config['Telegram']['media_files']
 
 def timestamp_from_date(date):
-    d = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ %f")
-    return int(d.strftime("%s")) * 1000 + d.microsecond / 1000
+    d = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
+    # return int(d.strftime("%s")) * 1000 + d.microsecond / 1000
+    return int(d.strftime("%s")) * 1000
     
 def get_attachments(pathdir):
     attachements = []
@@ -27,7 +28,8 @@ def get_attachments(pathdir):
         attachements.append({
             "path": pathdir + '/' + attachement,
         })
-    return attachements
+    # return attachements
+    return []
 
 def get_mmuser_from_file(tl_user):
     with open("list.json") as tlusers_file:
@@ -43,49 +45,49 @@ def get_tl_username_from_file(dir_users,id):
             if tluser['id'] == id:
                 return tluser['user']
 
-def get_mmteam_id(team_name):
-    url = url_server + "/v4/teams/name/" + team_name
+def get_mmteam_id(mmteam_name):
+    url = url_server + "/v4/teams/name/" + mmteam_name
     payload = {}
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
-    team = resp.json()
+    mmteam = resp.json()
     if resp.status_code == 200:
-        return team['id']
+        return mmteam['id']
     else:
         return False
     
 
-def get_mmuser_id(username):
-    url = url_server + "/v4/users/username/" + username
+def get_mmuser_id(mmusername):
+    url = url_server + "/v4/users/username/" + mmusername
     payload = {}
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
-    user = resp.json()
+    mmuser = resp.json()
     if resp.status_code == 200:
-        return user['id']
+        return mmuser['id']
     else:
         return False
 
-def get_mmchannel_id(team_id,channel_name):
-    url = url_server + "/v4/teams/" + team_id + "/channels/name/" + channel_name
+def get_mmchannel_id(mmteam_id,mmchannel_name):
+    url = url_server + "/v4/teams/" + mmteam_id + "/channels/name/" + mmchannel_name
     payload = {}
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
-    channel = resp.json()
+    mmchannel = resp.json()
     if resp.status_code == 200:
-        return channel['id']
+        return mmchannel['id']
     else:
         return False
 
-def create_mmuser(email,username,firstname,lastname):
+def create_mmuser(mmemail,mmusername,mmfirstname,mmlastname):
     url = url_server + "/v4/users"
-    payload = "{\"email\": \"" + email + "\", \"username\": \"" + username + "\", \"first_name\": \"" + firstname + "\", \"last_name\": \"" + lastname + "\", \"password\": \"Default@1545\", \"locale\": \"fr\"}"
+    payload = "{\"email\": \"" + mmemail + "\", \"username\": \"" + mmusername + "\", \"first_name\": \"" + mmfirstname + "\", \"last_name\": \"" + mmlastname + "\", \"password\": \"Default@1545\", \"locale\": \"fr\"}"
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     'Content-Type': 'application/json'
@@ -94,9 +96,21 @@ def create_mmuser(email,username,firstname,lastname):
     if resp.status_code == 400:
         return False
 
-def create_mmchannel(team_id,channel_name,channel_display_name,type_channel):
+def create_mmchannel(mmteam_id,mmchannel_name,mmchannel_display_name,mmtype_channel):
     url = url_server + "/v4/channels"
-    payload = "{\"team_id\": \"" + team_id + "\", \"name\": \"" + channel_name + "\",\"display_name\": \"" + channel_display_name + "\",\"type\": \"" + type_channel + "\"}"
+    payload = "{\"team_id\": \"" + mmteam_id + "\", \"name\": \"" + mmchannel_name + "\",\"display_name\": \"" + mmchannel_display_name + "\",\"type\": \"" + mmtype_channel + "\"}"
+    headers = {
+    'Authorization': 'Bearer ' + bearer_token,
+    'Content-Type': 'application/json'
+    }
+    resp = requests.request("POST", url, headers=headers, data = payload)
+    print(resp)
+    if resp.status_code == 400:
+        return False
+
+def add_user_to_mmteam(mmteam_id, mmuser_id):
+    url = url_server + "/v4/teams/" + mmteam_id + "/members"
+    payload = "{\"team_id\": \"" + mmteam_id + "\", \"user_id\": \"" + mmuser_id + "\"}"
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     'Content-Type': 'application/json'
@@ -105,9 +119,9 @@ def create_mmchannel(team_id,channel_name,channel_display_name,type_channel):
     if resp.status_code == 400:
         return False
 
-def add_user_to_mmteam(team_id, user_id):
-    url = url_server + "/v4/teams/" + team_id + "/members"
-    payload = "{\"team_id\": \"" + team_id + "\", \"user_id\": \"" + user_id + "\"}"
+def add_user_to_mmchannel(mmchannel_id,mmuser_id):
+    url = url_server + "/v4/channels/" + mmchannel_id + "/members"
+    payload = "{\"user_id\": \"" + mmuser_id + "\"}"
     headers = {
     'Authorization': 'Bearer ' + bearer_token,
     'Content-Type': 'application/json'
@@ -116,55 +130,48 @@ def add_user_to_mmteam(team_id, user_id):
     if resp.status_code == 400:
         return False
 
-def add_user_to_mmchannel(channel_id,user_id):
-    url = url_server + "/v4/channels/" + channel_id + "/members"
-    payload = "{\"user_id\": \"" + user_id + "\"}"
-    headers = {
-    'Authorization': 'Bearer ' + bearer_token,
-    'Content-Type': 'application/json'
-    }
-    resp = requests.request("POST", url, headers=headers, data = payload)
-    if resp.status_code == 400:
-        return False
+def import_mattermost(channel_info,args):
 
-def import_mattermost(channel_name,args):
+    tlchannel_name = channel_info['tlchannel_name']
+    tlchannel_id = channel_info['tlchannel_id']
 
     # Check if channel exists
-    team_id = get_mmteam_id(args.mmteam)
-    if not team_id:
+    mmteam_id = get_mmteam_id(args.mmteam)
+    if not mmteam_id:
         print("Error : Team: " + args.mmteam + " Introuvable")
         exit(0)
 
     if args.mmchannel == "False":
-        channel = False
+        mmchannel = False
     else:
-        channel_id = get_mmchannel_id(team_id,args.mmchannel)
-        channel = True
+        mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
+        mmchannel = True
 
     print("------------------------------------------------------------------------------------------------")
-    print(">> Import des données du groupe tl " + channel_name + " dans MM " + args.mmchannel)
+    print(">> Import des données du groupe tl " + tlchannel_name + " dans MM " + args.mmchannel)
     print("------------------------------------------------------------------------------------------------\n")
 
     ## Control de l'existance du groupe de destination/ Creer le groupe si inexistant
-    if channel:
-        if not channel_id:
-            channel = True
+    if mmchannel:
+        if not mmchannel_id:
+            mmchannel = True
             # Creation du canal
             print(">>>> Creation du channel car inexistant ...")
-            state = create_mmchannel(team_id,args.mmchannel,args.mmchannel,"P")
+            state = create_mmchannel(mmteam_id,args.mmchannel,args.mmchannel,"P")
+            print(state)
             if not state:
-                print(">>>> La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
+                print(">>>> Error: La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
                 exit(0)
             else:
-                channel_id = get_mmchannel_id(team_id,args.mmchannel)
-                if not channel_id:
-                    print(">>>> Echec lors de la création du channel : " + args.mmchannel)
+                mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
+                if not mmchannel_id:
+                    print(">>>> Error: lors de la création du channel : " + args.mmchannel)
                     exit(0)
 
     ## Traitement des utilisateurs pour importation
     print(">> Migration des Utilisateurs pour importation des données du channel")
     print("------------------------------------------------------------------------------------------------\n")
-    srcdir = media_files + "/" + channel_name
+    srcdir = media_files + "/" + str(tlchannel_id)
     with open(srcdir + '/user_data.json') as tlusers_file:
         tlusers = json.load(tlusers_file)
 
@@ -179,14 +186,14 @@ def import_mattermost(channel_name,args):
                 print(">>>> Verification ou création du compte : " + mmuser['email'])
                 create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
                 # get userid
-                user_id = get_mmuser_id(mmuser['mattermost'])
+                mmuser_id = get_mmuser_id(mmuser['mattermost'])
                 # join User to Team
                 print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-                add_user_to_mmteam(team_id, user_id)
+                add_user_to_mmteam(mmteam_id, mmuser_id)
                 # join User to group
-                if channel:
+                if mmchannel:
                     print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                    add_user_to_mmchannel(channel_id, user_id)
+                    add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
@@ -199,12 +206,12 @@ def import_mattermost(channel_name,args):
         tlmsgs = json.load(tlmsg_file)
         listmsgs = tlmsgs 
 
-    msg = 0
-    total_messages = len(tlmsgs)
-    all_posts = []
+    mmmsg = 0
+    mmtotal_messages = len(tlmsgs)
+    mmall_posts = []
     for tlmsg in tlmsgs:
-        post = ""
-        msg += 1
+        mmpost = ""
+        mmmsg += 1
     # Generation du fichier JSON d'import des données
 
         ## recuperation des medias du message
@@ -232,7 +239,7 @@ def import_mattermost(channel_name,args):
                 replies_msg.append({
                     "user": get_mmuser_from_file(tl_user),
                     "message": reply_msg['message'],
-                    "create_at": 140012352049,
+                    "create_at": timestamp_from_date(reply_msg['date']),
                     "attachments": reply_attached_files
                 })
         
@@ -240,46 +247,35 @@ def import_mattermost(channel_name,args):
 
         if tlmsg['reply_to_msg_id'] == None and tlmsg['action'] == False:
 
-            post_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
+            mmpost_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
 
-            post = {
+            mmpost = {
                 "team": args.mmteam,
                 "channel": args.mmchannel,
-                "user": get_mmuser_from_file(post_user),
+                "user": get_mmuser_from_file(mmpost_user),
                 "message": tlmsg['message'],
-                "create_at": 140012340013,
+                "create_at": timestamp_from_date(tlmsg['date']),
                 "replies": replies_msg,
                 "attachments": attached_files_msg
             }
 
-            all_posts.append({
+            mmall_posts.append({
                 "type": "post",
-                "post": post
+                "post": mmpost
             })
-            
-        # "id": tlmsg['id'],
-        # "date": tlmsg['date'],
-        # "message": tlmsg['message'],
-        # "from_id": tlmsg['from_id'],
-        # "fwd_from": tlmsg['fwd_from'],
-        # "reply_to_msg_id": tlmsg['reply_to_msg_id'],
-        # "media": tlmsg['media']
-        # create_post(channel_id, message, props={"from_webhook":"true"}, filepaths=[], root_id=None,
         
-        print(">>>> Transfer du message : " + str(msg) + "/" + str(total_messages))
+        print(">>>> Transfer du message : " + str(mmmsg) + "/" + str(mmtotal_messages))
 
     ## Generation du fichier d'import!
-    # with open(srcdir + '/mattermost_data.json', 'w') as outfile:
-    #     print(all_posts)
-
     with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
         filehandle.writelines('{"type":"version","version":1}\n')
-        filehandle.writelines("%s\n" % json.dumps(post) for post in all_posts)
+        filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
+    
+    os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
 
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------\n")
-
 
 
     # print(mm.get_channels_for_user(user_id,team_id))

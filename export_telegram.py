@@ -23,43 +23,56 @@ class DateTimeEncoder(json.JSONEncoder):
 def export_telegram(args):
 
     # Reading Configs
-    config = configparser.ConfigParser()
-    config.read("config.ini")
+    tlconfig = configparser.ConfigParser()
+    tlconfig.read("config.ini")
 
     # Setting configuration values
-    api_id = config['Telegram']['api_id']
-    api_hash = config['Telegram']['api_hash']
-    api_hash = str(api_hash)
+    tlapi_id = tlconfig['Telegram']['api_id']
+    tlapi_hash = tlconfig['Telegram']['api_hash']
+    tlapi_hash = str(tlapi_hash)
 
-    phone = args.tlphone
-    username = args.tlusername
-    user_input_channel = args.tlchannel
+    tlphone = args.tlphone
+    tlusername = args.tlusername
+    tluser_input_channel = args.tlchannel
 
-    media_files = config['Telegram']['media_files']
-    # bot_token = config['Telegram']['bot_token']
-    limit = config['Telegram']['limit']
-    total_count_limit = config['Telegram']['total_count_limit']
+    media_files = tlconfig['Telegram']['media_files']
+    # bot_token = tlconfig['Telegram']['bot_token']
+    limit = tlconfig['Telegram']['limit']
+    tltotal_count_limit = tlconfig['Telegram']['total_count_limit']
 
        
     # Create the client and connect
-    client = TelegramClient(username, api_id, api_hash)
-    if client.start(phone=phone):
-        print("Client Created")
+    client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
+    if client.start(phone=tlphone):
+        print("\n\n>> Authentification reussie pour le user : " + tlusername)
+        print("------------------------------------------------------------------------------------------------\n")
+    else:
+        print("\n\n>> Echec de l'authentification pour le user : " + tlusername)
+        print("------------------------------------------------------------------------------------------------\n")
 
     # Ensure you're authorized
     if not client.is_user_authorized():
-        client.send_code_request(phone)
+        client.send_code_request(tlphone)
         try:
-            client.sign_in(phone, input('Enter the code: '))
+            client.sign_in(tlphone, input('Enter the code: '))
         except SessionPasswordNeededError:
             client.sign_in(password=input('Password: '))
 
     # me = client.get_me()
-    channel = client.get_entity(user_input_channel)
-    channel_name = utils.get_display_name(channel)
+    if "https://t.me" in tluser_input_channel and args.mmchannel == "False":
+        print("Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --mmchannel")
+        exit(0)
+
+    if "https://t.me" not in tluser_input_channel and args.mmchannel != "False":
+        print("Error: Vous tentez de migrer une conversation, veuillez définir le channel de destination option --mmchannel à <<False>>")
+        exit(0)
+
+    tlchannel = client.get_entity(tluser_input_channel)
+    print(tlchannel.id)
+    tlchannel_name = utils.get_display_name(tlchannel)
 
     ## Reinitialisation du repertoire de donnée
-    destdir = media_files + "/" + channel_name
+    destdir = media_files + "/" + str(tlchannel.id)
     
     for root, dirs, files in os.walk(destdir):
         for f in files:
@@ -72,88 +85,88 @@ def export_telegram(args):
 
 
     print("------------------------------------------------------------------------------------------------")
-    print(">> Collecte des informations de Chanel/User/Chat : " + utils.get_display_name(channel))
+    print(">> Collecte des informations de Chanel/User/Chat : " + utils.get_display_name(tlchannel))
     print("------------------------------------------------------------------------------------------------\n")
 
     # Get users Participants
-    all_participants = client.get_participants(channel,limit=int(limit))
-    all_user_details = []
-    print(">> Get All participants: " + str(len(all_participants)))
+    tlall_participants = client.get_participants(tlchannel,limit=int(limit))
+    tlall_user_details = []
+    print(">> Get All participants: " + str(len(tlall_participants)))
 
-    for participant in all_participants:
-        all_user_details.append({
-            "id": participant.id,
-            "first_name": participant.first_name,
-            "last_name": participant.last_name,
-            "user": participant.username,
-            "phone": participant.phone,
-            "is_bot": participant.bot
+    for tlparticipant in tlall_participants:
+        tlall_user_details.append({
+            "id": tlparticipant.id,
+            "first_name": tlparticipant.first_name,
+            "last_name": tlparticipant.last_name,
+            "user": tlparticipant.username,
+            "phone": tlparticipant.phone,
+            "is_bot": tlparticipant.bot
         })
 
     with open(destdir + '/user_data.json', 'w') as outfile:
-        json.dump(all_user_details, outfile)
+        json.dump(tlall_user_details, outfile)
 
   
         
-    all_messages = []
-    offset_id = 0
-    total_messages = 0
+    tlall_messages = []
+    tloffset_id = 0
+    tltotal_messages = 0
     print(">> Get All messages")
 
     while True:
-        history = client.get_messages(channel,offset_id=offset_id,limit=int(limit))
-        if not history:
+        tlhistory = client.get_messages(tlchannel,offset_id=tloffset_id,limit=int(limit))
+        if not tlhistory:
             break
 
-        for message in history:
+        for tlmessage in tlhistory:
             
-            if message.fwd_from is not None:
-                fwd = []
-                fwd.append({
-                    "date": message.fwd_from.date,
-                    "from_id": message.fwd_from.from_id,
-                    "from_name": message.fwd_from.from_name
+            if tlmessage.fwd_from is not None:
+                tlfwd = []
+                tlfwd.append({
+                    "date": tlmessage.fwd_from.date,
+                    "from_id": tlmessage.fwd_from.from_id,
+                    "from_name": tlmessage.fwd_from.from_name
                 })
             else:
-                fwd = None
+                tlfwd = None
 
-            if message.media is not None:
+            if tlmessage.media is not None:
                 is_media=True
-                mediadir = destdir + "/" + str(message.id)
+                mediadir = destdir + "/" + str(tlmessage.id)
                 if not os.path.exists(mediadir):
                     os.makedirs(mediadir)
-                message.download_media(file=mediadir)
+                tlmessage.download_media(file=mediadir)
             else:
                 is_media = False
 
-            if message.action is not None:
+            if tlmessage.action is not None:
                 is_action = True
             else:
                 is_action = False
 
 
-            all_messages.append({
-                "id": message.id,
-                "date": message.date,
-                "message": message.message,
-                "from_id": message.from_id,
-                "fwd_from": fwd,
-                "reply_to_msg_id": message.reply_to_msg_id,
+            tlall_messages.append({
+                "id": tlmessage.id,
+                "date": tlmessage.date,
+                "message": tlmessage.message,
+                "from_id": tlmessage.from_id,
+                "fwd_from": tlfwd,
+                "reply_to_msg_id": tlmessage.reply_to_msg_id,
                 "media": is_media,
                 "action": is_action
             })
 
-        offset_id = history[len(history) - 1].id
-        total_messages = len(all_messages)
-        print(">>>> Current Offset ID is:", offset_id, "; Total Messages:", total_messages)
+        tloffset_id = tlhistory[len(tlhistory) - 1].id
+        tltotal_messages = len(tlall_messages)
+        print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
         
-        if int(total_count_limit) != 0 and total_messages >= int(total_count_limit):
+        if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
             break
 
     with open(destdir + '/channel_messages.json', 'w') as outfile:
         # json.dump(all_messages, outfile, cls=DateTimeEncoder)
-        json.dump(all_messages, outfile, cls=DateTimeEncoder)
+        json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n")
-    return channel_name
+    return {"tlchannel_id": tlchannel.id,"tlchannel_name": tlchannel_name}
