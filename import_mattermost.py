@@ -4,6 +4,7 @@ import json
 import os
 import datetime
 import requests
+import subprocess
 from export_telegram import DateTimeEncoder
 
 # Reading Configs
@@ -25,14 +26,17 @@ def run_mmbulk_commands(srcdir):
     if os.path.isdir(current_channel_dir):
         current_channel_jsonfile = current_channel_dir + "/mattermost_data.json"
         if os.path.isfile(current_channel_jsonfile):
-            cmd = "%s import bulk " % mattermost_cli 
-
+            
             print(">> Lancement de l'importation des données dans Mattermost")
             print("------------------------------------------------------------------------------------------------\n")
 
-            if os.path.isfile(mattermost_cli):
-                os.system("\"" + cmd + current_channel_jsonfile + " --apply\"")
+            status, result = subprocess.getstatusoutput("mattermost version")
+            if status == False:
+                cmd = "mattermost import bulk "
+                result = subprocess.getstatusoutput("\"" + cmd + current_channel_jsonfile + " --apply\"")
+                print(result)
             else:
+                cmd = "%s import bulk " % mattermost_cli 
                 print(">>>> Pour terminer executer manuellement la commande ci-dessous")
                 print(">>>> shell> " + cmd + current_channel_jsonfile + " --apply")
 
