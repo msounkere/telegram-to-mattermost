@@ -33,7 +33,7 @@ def run_mmbulk_commands(srcdir):
             status, result = subprocess.getstatusoutput("mattermost version")
             if status == False:
                 cmd = "mattermost import bulk "
-                result = subprocess.getstatusoutput("\"" + cmd + current_channel_jsonfile + " --apply\"")
+                result = subprocess.getstatusoutput(cmd + current_channel_jsonfile + " --apply")
                 print(result)
             else:
                 cmd = "%s import bulk " % mattermost_cli 
