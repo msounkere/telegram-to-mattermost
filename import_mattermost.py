@@ -128,10 +128,10 @@ def create_mmchannel(mmteam_id,mmchannel_name,mmchannel_display_name,mmtype_chan
     'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
-    print(resp)
+    mmchannel = resp.json()
     if resp.status_code == 400:
         return False
-    return True
+    return mmchannel['id']
 
 def add_user_to_mmteam(mmteam_id, mmuser_id):
     url = url_server + "/v4/teams/" + mmteam_id + "/members"
@@ -159,52 +159,38 @@ def add_user_to_mmchannel(mmchannel_id,mmuser_id):
         return False
     return True
 
-def import_mattermost(channel_info,args):
-
-    tlchannel_name = channel_info['tlchannel_name']
-    tlchannel_id = channel_info['tlchannel_id']
-
-    # Check if channel exists
-    mmteam_id = get_mmteam_id(args.mmteam)
-    if not mmteam_id:
-        print("Error : Team: " + args.mmteam + " Introuvable")
-        exit(0)
-
-    if args.mmchannel == "False":
-        mmchannel = False
-    else:
-        mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
-        mmchannel = True
-
+def tlentity_to_mmchannel(mmteam_id,tlentity_name,args):
     print("------------------------------------------------------------------------------------------------")
-    print(">> Import des données du groupe tl " + tlchannel_name + " dans MM " + args.mmchannel)
+    print(">> Creation du Channel tl " + tlentity_name + " dans MM " + args.mmchannel)
     print("------------------------------------------------------------------------------------------------\n")
 
     ## Control de l'existance du groupe de destination/ Creer le groupe si inexistant
-    if mmchannel:
-        if not mmchannel_id:
-            mmchannel = True
-            # Creation du canal
-            print(">>>> Creation du channel car inexistant ...")
-            state = create_mmchannel(mmteam_id,args.mmchannel,args.mmchannel,"P")
+    mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
+    if not mmchannel_id:
+        # Creation du canal
+        print(">>>> Creation du channel car inexistant ...\n")
+        result = create_mmchannel(mmteam_id,args.mmchannel,args.mmchannel,"P")
 
-            if not state:
-                print(">>>> Error: La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
-                exit(0)
-            else:
-                mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
-                if not mmchannel_id:
-                    print(">>>> Error: lors de la création du channel : " + args.mmchannel)
-                    exit(0)
+        if not result:
+            print(">>>> Error: La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
+            exit(0)
+        else:
+            mmchannel_id = result
+    else:
+        print(">>>> Channel Existant ...\n")
 
-    ## Traitement des utilisateurs pour importation
+    print(">> Done")
+    print("------------------------------------------------------------------------------------------------\n\n")
+    return mmchannel_id
+
+
+def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print(">> Migration des Utilisateurs pour importation des données du channel")
     print("------------------------------------------------------------------------------------------------\n")
 
-    srcdir = media_files + "/" + str(tlchannel_id)
+    srcdir = media_files + "/" + str(tlentity_id)
     with open(srcdir + '/user_data.json') as tlusers_file:
         tlusers = json.load(tlusers_file)
-
 
     with open("list.json") as mmusers_file:
         mmusers = json.load(mmusers_file)
@@ -212,23 +198,27 @@ def import_mattermost(channel_info,args):
     for mmuser in mmusers:
         for tluser in tlusers:
             if mmuser['telegram'] == tluser['user']:
+
                 # Create required users
                 print(">>>> Verification ou création du compte : " + mmuser['email'])
                 create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
+
                 # get userid
                 mmuser_id = get_mmuser_id(mmuser['mattermost'])
+
                 # join User to Team
                 print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
                 add_user_to_mmteam(mmteam_id, mmuser_id)
+
                 # join User to group
-                if mmchannel:
-                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                    add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+                add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
 
-    ## Traitement des conversations pour importation
+def tlentity_posts_to_mmchannel_posts(tlentity_id,args):
+    srcdir = media_files + "/" + str(tlentity_id)
     print(">> Migration des conversations et  medias vers le channel/chat Mattermost : " + args.mmchannel)
     print("------------------------------------------------------------------------------------------------\n")
     
@@ -242,30 +232,24 @@ def import_mattermost(channel_info,args):
     for tlmsg in tlmsgs:
         mmpost = ""
         mmmsg += 1
-    # Generation du fichier JSON d'import des données
-
+        # Generation du fichier JSON d'import des données
         ## recuperation des medias du message
         attached_files_msg = []
-
         if tlmsg['media'] == True:
             pathdir = srcdir + '/' + str(tlmsg['id'])
             attached_files_msg = get_attachments(pathdir)
 
-
         ## recuperation des reponses en liaison avec le message
         replies_msg = []
-
         for reply_msg in listmsgs:
             if reply_msg['reply_to_msg_id'] == tlmsg['id']:
 
                 reply_attached_files = []
-
                 if reply_msg['media'] == True:
                     reply_pathdir = srcdir + '/' + str(reply_msg['id'])
                     reply_attached_files = get_attachments(reply_pathdir)
 
                 tl_user = get_tl_username_from_file(srcdir,reply_msg['from_id'])
-
                 replies_msg.append({
                     "user": get_mmuser_from_file(tl_user),
                     "message": reply_msg['message'],
@@ -276,9 +260,7 @@ def import_mattermost(channel_info,args):
         ## Mattermost final structure for importations
 
         if tlmsg['reply_to_msg_id'] == None and tlmsg['action'] == False:
-
             mmpost_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
-
             mmpost = {
                 "team": args.mmteam,
                 "channel": args.mmchannel,
@@ -295,6 +277,12 @@ def import_mattermost(channel_info,args):
             })
         
         print(">>>> Transfer du message : " + str(mmmsg) + "/" + str(mmtotal_messages))
+    
+    return mmall_posts
+
+def import_mmposts(tlentity_id,mmall_posts):
+
+    srcdir = media_files + "/" + str(tlentity_id)
 
     ## Generation du fichier d'import!
     with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
@@ -310,6 +298,35 @@ def import_mattermost(channel_info,args):
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------\n")
+
+def import_mattermost(tlentity_info,args):
+
+    tlentity_name = tlentity_info['tlentity_name']
+    tlentity_id = tlentity_info['tlentity_id']
+
+    # Check if channel exists
+    mmteam_id = get_mmteam_id(args.mmteam)
+    if not mmteam_id:
+        print(">>>> Error : Team: " + args.mmteam + " Introuvable")
+        exit(0)
+
+    ## check action process
+    if args.type == "channel":
+        ## Traitement des channels pour importation
+        mmchannel_id = tlentity_to_mmchannel(mmteam_id,tlentity_name,args)
+        
+        ## Traitement des utilisateurs pour importation
+        tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args)
+
+        ## Traitement des conversation pour importation
+        mmall_posts = tlentity_posts_to_mmchannel_posts(tlentity_id,args)
+
+        ## Generation du fichier d'import!
+        import_mmposts(tlentity_id,mmall_posts)
+
+    if args.type == "chat":
+        print("Not Yet")
+        exit(0)
 
 
     # print(mm.get_channels_for_user(user_id,team_id))

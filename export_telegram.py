@@ -42,11 +42,11 @@ def export_telegram(args):
 
     tlphone = args.tlphone
     tlusername = args.tlusername
-    tluser_input_channel = args.tlchannel
-    
+
     # Create the client and connect
     client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
     if client.start(phone=tlphone):
+        client.takeout()
         print("\n>> Authentification reussie pour le user : " + tlusername)
         print("------------------------------------------------------------------------------------------------\n")
     else:
@@ -61,21 +61,29 @@ def export_telegram(args):
         except SessionPasswordNeededError:
             client.sign_in(password=input('Password: '))
 
-    client.takeout()
+    ## check action process
+    print(args.type)
+    if args.type == "chat":
+        if "https://t.me" not in args.tlchat:
+            tluser_input_entity = args.tlchat
+        else:
+            print(">> Error: Vous tentez de migrer une conversation, Veuillez définir le channel de destination option --tlchat username")
+            exit(0)
+
+    if args.type == "channel":
+        if "https://t.me" in args.tlchannel:
+            tluser_input_entity = args.tlchannel
+        else:
+            print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
+            exit(0)
+        
+
     # me = client.get_me()
-    if "https://t.me" in tluser_input_channel and args.mmchannel == "False":
-        print("Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --mmchannel")
-        exit(0)
-
-    if "https://t.me" not in tluser_input_channel and args.mmchannel != "False":
-        print("Error: Vous tentez de migrer une conversation, veuillez définir le channel de destination option --mmchannel à <<False>>")
-        exit(0)
-
-    tlchannel = client.get_entity(tluser_input_channel)
-    tlchannel_name = utils.get_display_name(tlchannel)
+    tlentity = client.get_entity(tluser_input_entity)
+    tlentity_name = utils.get_display_name(tlentity)
 
     ## Reinitialisation du repertoire de donnée
-    destdir = media_files + "/" + str(tlchannel.id)
+    destdir = media_files + "/" + str(tlentity.id)
     
     for root, dirs, files in os.walk(destdir):
         for f in files:
@@ -88,11 +96,11 @@ def export_telegram(args):
 
 
     print("------------------------------------------------------------------------------------------------")
-    print(">> Collecte des informations de Chanel/User/Chat : " + utils.get_display_name(tlchannel))
+    print(">> Collecte des informations de Chanel/User/Chat : " + tlentity_name)
     print("------------------------------------------------------------------------------------------------\n")
 
     # Get users Participants
-    tlall_participants = client.get_participants(tlchannel,limit=int(limit))
+    tlall_participants = client.get_participants(tlentity,limit=int(limit))
     tlall_user_details = []
     print(">> Get All participants: " + str(len(tlall_participants)))
 
@@ -114,10 +122,10 @@ def export_telegram(args):
     tlall_messages = []
     tloffset_id = 0
     tltotal_messages = 0
-    print(">> Get All messages")
+    print(">> Get All messages\n")
 
     while True:
-        tlhistory = client.get_messages(tlchannel,offset_id=tloffset_id,limit=int(limit))
+        tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
         if not tlhistory:
             break
 
@@ -140,7 +148,7 @@ def export_telegram(args):
                 mediadir = destdir + "/" + str(tlmessage.id)
                 if not os.path.exists(mediadir):
                     os.makedirs(mediadir)
-                tlmessage.download_media(file=mediadir,progress_callback=callback)
+                tlmessage.download_media(file=mediadir)
             else:
                 is_media = False
 
@@ -163,8 +171,7 @@ def export_telegram(args):
 
         tloffset_id = tlhistory[len(tlhistory) - 1].id
         tltotal_messages = len(tlall_messages)
-        print("\n>>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
-        print("-------------------------------------------------------")
+        print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
         if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
             break
 
@@ -172,6 +179,6 @@ def export_telegram(args):
         # json.dump(all_messages, outfile, cls=DateTimeEncoder)
         json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
-    print(">> Done")
+    print("\n>> Done")
     print("------------------------------------------------------------------------------------------------\n")
-    return {"tlchannel_id": tlchannel.id,"tlchannel_name": tlchannel_name}
+    return {"tlentity_id": tlentity.id,"tlentity_name": tlentity_name}
