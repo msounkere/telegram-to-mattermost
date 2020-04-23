@@ -13,9 +13,28 @@ config.read("config.ini")
 # Setting configuration values
 url_server = config['Mattermost']['url_server']
 bearer_token = config['Mattermost']['bearer_token']
+mattermost_cli = config['Mattermost']['mattermost_cli']
 
 currentdir = os.getcwd()
 media_files = currentdir + "/" + config['Telegram']['media_files']
+
+def run_mmbulk_commands(srcdir):
+
+    ## Get mmchannel list json file
+    current_channel_dir = srcdir   
+    if os.path.isdir(current_channel_dir):
+        current_channel_jsonfile = current_channel_dir + "/mattermost_data.json"
+        if os.path.isfile(current_channel_jsonfile):
+            cmd = "%s import bulk " % mattermost_cli 
+
+            print(">> Lancement de l'importation des données dans Mattermost")
+            print("------------------------------------------------------------------------------------------------\n")
+
+            if os.path.isfile(mattermost_cli):
+                os.system("\"" + cmd + current_channel_jsonfile + " --apply\"")
+            else:
+                print(">>>> Pour terminer executer manuellement la commande ci-dessous")
+                print(">>>> shell> " + cmd + current_channel_jsonfile + " --apply")
 
 def timestamp_from_date(date):
     d = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
@@ -177,6 +196,7 @@ def import_mattermost(channel_info,args):
     ## Traitement des utilisateurs pour importation
     print(">> Migration des Utilisateurs pour importation des données du channel")
     print("------------------------------------------------------------------------------------------------\n")
+
     srcdir = media_files + "/" + str(tlchannel_id)
     with open(srcdir + '/user_data.json') as tlusers_file:
         tlusers = json.load(tlusers_file)
@@ -278,12 +298,14 @@ def import_mattermost(channel_info,args):
         filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
     
     os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
+    print(">> Done")
+    print("------------------------------------------------------------------------------------------------\n")
+    ## Generation de la commande d'import des données
+    run_mmbulk_commands(srcdir)
 
-    ## Generation des commandes d'import des données
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------\n")
-    print("to import all data run : << python3 bulk_import.py >>")
 
 
     # print(mm.get_channels_for_user(user_id,team_id))

@@ -1,35 +1,6 @@
-import configparser
 import argparse
-import os
 from export_telegram import export_telegram
 from import_mattermost import import_mattermost
-# Reading Configs
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-# Setting configuration values
-mattermost_cli = config['Mattermost']['mattermost_cli']
-
-def get_mmbulk_commands():
-    currentdir = os.getcwd() + "/" + "media"
-    mmchannel_dirs = os.listdir(currentdir)
-    
-    ## Get mmchannel list json file
-    mmlist_command_actions = []
-    for mmchannel_dir in mmchannel_dirs:
-        current_channel_dir = currentdir + "/" + mmchannel_dir
-        if os.path.isdir(current_channel_dir):
-            current_channel_jsonfile = current_channel_dir + "/mattermost_data.json"
-            if os.path.isfile(current_channel_jsonfile):
-                mmlist_command_actions.append(current_channel_jsonfile)
-
-    ## Generate cmd
-    cmd = "%s import bulk " % mattermost_cli 
-    with open('bulk_import.py', 'w') as filehandle:
-        filehandle.writelines('import os\n')
-        filehandle.writelines("os.system(\"" + cmd + mm_command_action + " --apply\")\n"  for mm_command_action in mmlist_command_actions)
-    
-
 
 def main():
     #fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -53,7 +24,5 @@ def main():
         exit(0)
 
     import_mattermost(export_telegram(args),args)
-    get_mmbulk_commands()
-
 if __name__ == "__main__":
     main()
