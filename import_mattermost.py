@@ -95,6 +95,7 @@ def create_mmuser(mmemail,mmusername,mmfirstname,mmlastname):
     resp = requests.request("POST", url, headers=headers, data = payload)
     if resp.status_code == 400:
         return False
+    return True
 
 def create_mmchannel(mmteam_id,mmchannel_name,mmchannel_display_name,mmtype_channel):
     url = url_server + "/v4/channels"
@@ -107,6 +108,7 @@ def create_mmchannel(mmteam_id,mmchannel_name,mmchannel_display_name,mmtype_chan
     print(resp)
     if resp.status_code == 400:
         return False
+    return True
 
 def add_user_to_mmteam(mmteam_id, mmuser_id):
     url = url_server + "/v4/teams/" + mmteam_id + "/members"
@@ -116,8 +118,11 @@ def add_user_to_mmteam(mmteam_id, mmuser_id):
     'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
+    
     if resp.status_code == 400:
         return False
+    return True
+
 
 def add_user_to_mmchannel(mmchannel_id,mmuser_id):
     url = url_server + "/v4/channels/" + mmchannel_id + "/members"
@@ -129,6 +134,7 @@ def add_user_to_mmchannel(mmchannel_id,mmuser_id):
     resp = requests.request("POST", url, headers=headers, data = payload)
     if resp.status_code == 400:
         return False
+    return True
 
 def import_mattermost(channel_info,args):
 
@@ -158,7 +164,7 @@ def import_mattermost(channel_info,args):
             # Creation du canal
             print(">>>> Creation du channel car inexistant ...")
             state = create_mmchannel(mmteam_id,args.mmchannel,args.mmchannel,"P")
-            print(state)
+
             if not state:
                 print(">>>> Error: La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
                 exit(0)
@@ -273,6 +279,8 @@ def import_mattermost(channel_info,args):
     
     os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
 
+    ## Generation des commandes d'import des données
+    # print(mattermost_cli)
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------\n")

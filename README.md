@@ -9,19 +9,21 @@
 
 - Mise en place de l'environnement
 ```bash
+# Dans le cas des env Docker la commande ci-dessous vous permettra de vous connecter à votre docker
+shell> docker exec -it -u 2000 mattermost-docker_app_1 /bin/sh
 # mise à jour du système
-shell> sudo apt update
-shell> sudo apt upgrade
+shell> apt update
+shell> apt upgrade
 
 # Installation du multiversion de python
-shell> sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-shell> sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
-shell> sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 3
-shell> sudo apt install python3-pip
-shell> sudo pip3 install telethon
+shell> update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+shell> update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
+shell> update-alternatives --install /usr/bin/python python /usr/bin/python3.7 3
+shell> apt install python3-pip
+shell> pip3 install telethon
 
 # Choix du python par défault
-shell> sudo update-alternatives --config python
+shell> update-alternatives --config python
 ```
 ## 2 - Migration des données
 - Déploiement du script
@@ -48,7 +50,8 @@ usage: migrate.py [-h] [--tlusername TLUSERNAME] [--tlphone TLPHONE]
 ```
 - Transférer les données dans Mattermost par le méthode BULK JSON
 ```bash
-shell> sudo /mattermost/bin/mattermost import bulk /opt/telegram-to-mattermost/media/1192446106/mattermost_data.json --appl
+shell> cd telegram-to-mattermost
+shell> python3 bulk_import.py 
 ```
 Vous retrouverez toutes vos conversations dans Mattermost
 Vive l'Opensource !!!

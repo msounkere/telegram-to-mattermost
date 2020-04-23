@@ -34,6 +34,9 @@ class DateTimeEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, o)
 
+def callback(current, total):
+    print('>>>>>>>> Downloaded', current, 'out of', total,
+          'bytes: {:.2%}'.format(current / total))
 
 def export_telegram(args):
 
@@ -58,6 +61,7 @@ def export_telegram(args):
         except SessionPasswordNeededError:
             client.sign_in(password=input('Password: '))
 
+    client.takeout()
     # me = client.get_me()
     if "https://t.me" in tluser_input_channel and args.mmchannel == "False":
         print("Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --mmchannel")
@@ -118,7 +122,9 @@ def export_telegram(args):
             break
 
         for tlmessage in tlhistory:
-            
+
+            # print(tlmessage)
+
             if tlmessage.fwd_from is not None:
                 tlfwd = []
                 tlfwd.append({
@@ -130,11 +136,11 @@ def export_telegram(args):
                 tlfwd = None
 
             if tlmessage.media is not None:
-                is_media=True
+                is_media = True
                 mediadir = destdir + "/" + str(tlmessage.id)
                 if not os.path.exists(mediadir):
                     os.makedirs(mediadir)
-                tlmessage.download_media(file=mediadir)
+                tlmessage.download_media(file=mediadir,progress_callback=callback)
             else:
                 is_media = False
 
@@ -157,8 +163,8 @@ def export_telegram(args):
 
         tloffset_id = tlhistory[len(tlhistory) - 1].id
         tltotal_messages = len(tlall_messages)
-        print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
-        
+        print("\n>>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
+        print("-------------------------------------------------------")
         if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
             break
 
