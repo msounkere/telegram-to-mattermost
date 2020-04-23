@@ -10,6 +10,7 @@ def main():
     parser.add_argument("--tlusername", type=str)
     parser.add_argument("--tlphone", type=str)
     parser.add_argument("--tlchannel", type=str)
+    parser.add_argument("--tlchat", type=str)
     parser.add_argument("--mmteam", type=str)
     parser.add_argument("--mmchannel", type=str)
     # parser.add_argument("--mmusername", type=str)
@@ -22,14 +23,14 @@ def main():
     else:
         if args.type == "chat":
             if not args.tlchat or not args.tlphone or not args.tlusername or not args.mmteam:
-                print("les options suivantes sont obligatoires :\n --tlusername\n--tlphone\n--tlchat\n--mmteam")
-                print("shell> python3 migrate.py --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat username_correspondant --mmteam veone")
+                print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n--tlchat\n--mmteam")
+                print("eg. shell> python3 migrate.py --type chat --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat username_correspondant --mmteam veone")
                 exit(0)
 
         if args.type == "channel":
             if not args.tlchannel or not args.tlphone or not args.tlusername or not args.mmteam or not args.mmchannel:
-                print("les options suivantes sont obligatoires :\n --tlusername\n--tlphone\n--tlchannel\n--mmteam\n--mmchannel")
-                print("eg. shell> python3 migrate.py --tlusername admin_channel_telegram --tlphone phone_number_admin_channel --tlchannel https://t.me/joinchat/EchPiQ1b7_rOL-3KF0aXuQ --mmteam veone --mmchannel channel_mattermost")
+                print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n--tlchannel\n--mmteam\n--mmchannel")
+                print("eg. shell> python3 migrate.py --type channel --tlusername admin_channel_telegram --tlphone phone_number_admin_channel --tlchannel https://t.me/joinchat/EchPiQ1b7_rOL-3KF0aXuQ --mmteam veone --mmchannel channel_mattermost")
                 exit(0)
     
     

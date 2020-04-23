@@ -62,7 +62,6 @@ def export_telegram(args):
             client.sign_in(password=input('Password: '))
 
     ## check action process
-    print(args.type)
     if args.type == "chat":
         if "https://t.me" not in args.tlchat:
             tluser_input_entity = args.tlchat
@@ -76,7 +75,6 @@ def export_telegram(args):
         else:
             print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
             exit(0)
-        
 
     # me = client.get_me()
     tlentity = client.get_entity(tluser_input_entity)
@@ -94,13 +92,16 @@ def export_telegram(args):
     if not os.path.exists(destdir):
         os.makedirs(destdir)
 
-
     print("------------------------------------------------------------------------------------------------")
     print(">> Collecte des informations de Chanel/User/Chat : " + tlentity_name)
     print("------------------------------------------------------------------------------------------------\n")
 
     # Get users Participants
     tlall_participants = client.get_participants(tlentity,limit=int(limit))
+    
+    if args.type == "chat":
+        tlall_participants.append(client.get_me())
+
     tlall_user_details = []
     print(">> Get All participants: " + str(len(tlall_participants)))
 
@@ -116,8 +117,6 @@ def export_telegram(args):
 
     with open(destdir + '/user_data.json', 'w') as outfile:
         json.dump(tlall_user_details, outfile)
-
-  
         
     tlall_messages = []
     tloffset_id = 0
@@ -130,8 +129,6 @@ def export_telegram(args):
             break
 
         for tlmessage in tlhistory:
-
-            # print(tlmessage)
 
             if tlmessage.fwd_from is not None:
                 tlfwd = []

@@ -210,16 +210,17 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
                 print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
                 add_user_to_mmteam(mmteam_id, mmuser_id)
 
-                # join User to group
-                print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                if args.type == "channel":
+                    # join User to group
+                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+                    add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
 
-def tlentity_posts_to_mmchannel_posts(tlentity_id,args):
+def tl_posts_to_mm_posts(tlentity_id,args):
     srcdir = media_files + "/" + str(tlentity_id)
-    print(">> Migration des conversations et  medias vers le channel/chat Mattermost : " + args.mmchannel)
+    # print(">> Migration des conversations et  medias vers le channel/chat Mattermost : " + args.mmchannel)
     print("------------------------------------------------------------------------------------------------\n")
     
     with open(srcdir + '/channel_messages.json') as tlmsg_file:
@@ -258,23 +259,40 @@ def tlentity_posts_to_mmchannel_posts(tlentity_id,args):
                 })
         
         ## Mattermost final structure for importations
-
         if tlmsg['reply_to_msg_id'] == None and tlmsg['action'] == False:
             mmpost_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
-            mmpost = {
-                "team": args.mmteam,
-                "channel": args.mmchannel,
-                "user": get_mmuser_from_file(mmpost_user),
-                "message": tlmsg['message'],
-                "create_at": timestamp_from_date(tlmsg['date']),
-                "replies": replies_msg,
-                "attachments": attached_files_msg
-            }
+            if args.type == "channel":
+                mmpost = {
+                    "team": args.mmteam,
+                    "channel": args.mmchannel,
+                    "user": get_mmuser_from_file(mmpost_user),
+                    "message": tlmsg['message'],
+                    "create_at": timestamp_from_date(tlmsg['date']),
+                    "replies": replies_msg,
+                    "attachments": attached_files_msg
+                }
+                mmall_posts.append({
+                    "type": "post",
+                    "post": mmpost
+                })
 
-            mmall_posts.append({
-                "type": "post",
-                "post": mmpost
-            })
+            if args.type == "chat":
+                from_user = get_mmuser_from_file(args.tlusername)
+                to_user = get_mmuser_from_file(args.tlchat)
+
+                mmpost = {
+                    "channel_members": [from_user,to_user],
+                    "user": get_mmuser_from_file(mmpost_user),
+                    "message": tlmsg['message'],
+                    "create_at": timestamp_from_date(tlmsg['date']),
+                    "replies": replies_msg,
+                    "attachments": attached_files_msg
+                }
+                mmall_posts.append({
+                    "type": "direct_post",
+                    "direct_post": mmpost
+                })
+
         
         print(">>>> Transfer du message : " + str(mmmsg) + "/" + str(mmtotal_messages))
     
@@ -319,14 +337,19 @@ def import_mattermost(tlentity_info,args):
         tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args)
 
         ## Traitement des conversation pour importation
-        mmall_posts = tlentity_posts_to_mmchannel_posts(tlentity_id,args)
+        mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
 
         ## Generation du fichier d'import!
         import_mmposts(tlentity_id,mmall_posts)
 
     if args.type == "chat":
-        print("Not Yet")
-        exit(0)
 
+        ## Traitement des utilisateurs pour importation
+        tluser_to_mmusers("",mmteam_id,tlentity_id,args)
 
-    # print(mm.get_channels_for_user(user_id,team_id))
+        ## Traitement des conversation pour importation
+        mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
+
+        ## Generation du fichier d'import!
+        import_mmposts(tlentity_id,mmall_posts)
+
