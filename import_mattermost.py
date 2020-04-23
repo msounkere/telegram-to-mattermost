@@ -280,10 +280,10 @@ def import_mattermost(channel_info,args):
     os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
 
     ## Generation des commandes d'import des données
-    # print(mattermost_cli)
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------\n")
+    print("to import all data run : << python3 bulk_import.py >>")
 
 
     # print(mm.get_channels_for_user(user_id,team_id))

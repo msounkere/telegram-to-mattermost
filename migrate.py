@@ -52,7 +52,7 @@ def main():
         print("shell> python3 migrate.py --tlusername usertelegram --tlphone phone_number_usertelegram --tlchannel username_correspondant --mmteam veone --mmchannel False")
         exit(0)
 
-    # import_mattermost(export_telegram(args),args)
+    import_mattermost(export_telegram(args),args)
     get_mmbulk_commands()
 
 if __name__ == "__main__":
