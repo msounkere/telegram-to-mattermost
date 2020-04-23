@@ -23,10 +23,6 @@ def get_mmbulk_commands():
             if os.path.isfile(current_channel_jsonfile):
                 mmlist_command_actions.append(current_channel_jsonfile)
 
-    print(mmlist_command_actions)
-    
-    # /mattermost/bin/mattermost import bulk /opt/telegram-to-mattermost/media/1192446106/mattermost_data.json --apply
-
     ## Generate cmd
     cmd = "%s import bulk " % mattermost_cli 
     with open('bulk_import.py', 'w') as filehandle:
@@ -56,7 +52,7 @@ def main():
         print("shell> python3 migrate.py --tlusername usertelegram --tlphone phone_number_usertelegram --tlchannel username_correspondant --mmteam veone --mmchannel False")
         exit(0)
 
-    import_mattermost(export_telegram(args),args)
+    # import_mattermost(export_telegram(args),args)
     get_mmbulk_commands()
 
 if __name__ == "__main__":
