@@ -79,11 +79,12 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 ```
 
 - Transférer les données dans Mattermost par le méthode BULK JSON
-NB : si la commande mattermost n'existe pas, pour terminer executer manuellement la commande ci-dessous
+
 ```bash
+# NB : si la commande "mattermost" n'existe pas, pour terminer executer manuellement la commande ci-dessous
 >>>> shell> /mattermost/bin/mattermost import bulk /home/msounkere/projects/telegram-to-mattermost/media/1192446106/mattermost_data.json --apply
 ```
-Vous retrouverez toutes vos conversations dans Mattermost , Vive l'Opensource !!!
+Vous retrouverez toutes vos conversations dans Mattermost !!!
 
   
 ## 3 - FIN

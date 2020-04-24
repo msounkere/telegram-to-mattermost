@@ -36,7 +36,7 @@ def run_mmbulk_commands(srcdir):
                 result = subprocess.getstatusoutput(cmd + current_channel_jsonfile + " --apply")
                 print(result)
             else:
-                cmd = "%s import bulk " % mattermost_cli 
+                cmd = "%s import bulk --worker 4 " % mattermost_cli 
                 print(">>>> Pour terminer executer manuellement la commande ci-dessous")
                 print(">>>> shell> " + cmd + current_channel_jsonfile + " --apply")
 
