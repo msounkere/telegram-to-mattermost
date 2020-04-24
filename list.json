@@ -31,18 +31,18 @@
     "lastname" : "DABILA OUATTARA",
     "email" : "dabila.ouattara@veone.net",
     "telegram" : "Dhalilou",
-    "mattermost" : "Dhalilou"
+    "mattermost" : "dhalilou"
     },
     {
    "firstname" : "Cedrick Ceruya Oka",
    "lastname" : "Baidai",
    "email" : "cedric.baidai@veone.net",
    "telegram" : "cedrickoka",
-   "mattermost" : "cedrickoka"
+   "mattermost" : "cbaidai"
    },
    {
-    "firstname" : "KOUAKOU",
-    "lastname" : "N'Guessan Brahiman",
+    "firstname" : "N'Guessan Brahiman",
+    "lastname" : "KOUAKOU",
     "email" : "brahiman.kouakou@veone.net",
     "telegram" : "brahiman_brahiman",
     "mattermost" : "brahiman"
@@ -52,11 +52,11 @@
     "lastname" : "KOUTOUAN",
     "email" : "renaud.koutouan@veone.net",
     "telegram" : "RENAUDK",
-    "mattermost" : "RENAUDK"
+    "mattermost" : "rkoutouan"
    },
    {
-    "firstname" : "MAX-WELL",
-    "lastname" : "LE MESSIE 'GOD EAGLE'",
+    "firstname" : "Maxwell",
+    "lastname" : "KOUADIO",
     "email" : "maxwell.kouadio@veone.net",
     "telegram" : "touchais",
     "mattermost" : "mkouadio"
@@ -108,7 +108,7 @@
     "lastname" : "ASSEMIEN",
     "email" : "fabrice.assemien@veone.net",
     "telegram" : "fassemien",
-    "mattermost" : "fassemian"
+    "mattermost" : "fassemien"
     },
     {
     "firstname" : "Rita",
@@ -150,7 +150,7 @@
     "lastname" : "KOUAKOU",
     "email" : "pierre.kouakou@veone.net",
     "telegram" : "Pierrekouakou7",
-    "mattermost" : "Pierrekouakou7"
+    "mattermost" : "pkouakou"
     },
     {
     "firstname" : "Cédric",
@@ -206,7 +206,7 @@
     "lastname" : "M’BAHIA",
     "email" : "othniel.mbahia@veonedigital.ci",
     "telegram" : "othnielmbahia",
-    "mattermost" : "Ombahia"
+    "mattermost" : "ombahia"
     },
     {
     "firstname" : "Fabien",
@@ -227,6 +227,6 @@
     "lastname" : "AMEWUHO",
     "email" : "  amewuho.adzovi@veonedigital.ci",
     "telegram" : "Adzovi",
-    "mattermost" : "aamewhuho"
+    "mattermost" : "aamewuho"
     }
 ]
