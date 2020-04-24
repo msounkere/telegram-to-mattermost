@@ -118,8 +118,8 @@
     "mattermost" : "rkoudougnon"
     },
     {
-    "firstname" : "Fatim OS",
-    "lastname" : "Nouctjan",
+    "firstname" : "Fatim Nouctjan",
+    "lastname" : "OUATTARA",
     "email" : "fatim.ouattara@veone.net",
     "telegram" : "FatimV1",
     "mattermost" : "fouattara"
@@ -128,14 +128,14 @@
     "firstname" : "Lopez",
     "lastname" : "DJAGNI",
     "email" : "lopez.djagni@veone.net",
-    "telegram" : "Lopez Djagni",
+    "telegram" : "Lopezdjagni",
     "mattermost" : "ldjagni"
     },
     {
     "firstname" : "Jessica",
-    "lastname" : "AKASSOU ",
+    "lastname" : "AKASSOU",
     "email" : "Jessica.akassou@veone.net",
-    "telegram" : "@jessy225",
+    "telegram" : "jessy225",
     "mattermost" : "jakassou"
     },
     {
@@ -209,13 +209,6 @@
     "mattermost" : "Ombahia"
     },
     {
-    "firstname" : "happy",
-    "lastname" : "ADZOVI",
-    "email" : "amewuho.adzovi@veonedigital.ci",
-    "telegram" : "@Adzovi",
-    "mattermost" : "hadzovi"
-    },
-    {
     "firstname" : "Fabien",
     "lastname" : "DALIGOU",
     "email" : "fabien.daligou@veonedigital.ci",
@@ -233,7 +226,7 @@
     "firstname" : "Adzovi",
     "lastname" : "AMEWUHO",
     "email" : "  amewuho.adzovi@veonedigital.ci",
-    "telegram" : "Adzovi ",
-    "mattermost" : "Adzovi "
+    "telegram" : "Adzovi",
+    "mattermost" : "aamewhuho"
     }
 ]
