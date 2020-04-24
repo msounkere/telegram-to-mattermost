@@ -262,9 +262,6 @@ def tl_posts_to_mm_posts(tlentity_id,args):
         if tlmsg['reply_to_msg_id'] == None and tlmsg['action'] == False:
             mmpost_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
             if args.type == "channel":
-                if tlmsg['message'] == "":
-                    tlmsg['message'] = "---"
-
                 mmpost = {
                     "team": args.mmteam,
                     "channel": args.mmchannel,
@@ -282,8 +279,7 @@ def tl_posts_to_mm_posts(tlentity_id,args):
             if args.type == "chat":
                 from_user = get_mmuser_from_file(args.tlusername)
                 to_user = get_mmuser_from_file(args.tlchat)
-                if tlmsg['message'] == "":
-                    tlmsg['message'] = "---"
+
                 mmpost = {
                     "channel_members": [from_user,to_user],
                     "user": get_mmuser_from_file(mmpost_user),

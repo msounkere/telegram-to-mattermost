@@ -3,28 +3,237 @@
     "lastname" : "SOUNKERE",
     "email" : "sounkere@veone.net",
     "telegram" : "msounkere",
-    "mattermost" : "msounkere"
+    "team" : "msounkere"
     },
     {
     "firstname" : "Fanny",
     "lastname" : "CISSE",
     "email" : "fanny.cisse@veone.net",
     "telegram" : "fannyc",
-    "mattermost" : "fcisse"
+    "team" : "fcisse"
     },
     {
     "firstname" : "Emmanuel A.",
     "lastname" : "ASSOKO",
     "email" : "assoko.em@veone.net",
     "telegram" : "AssokoEm",
-    "mattermost" : "eassoko"
+    "team" : "eassoko"
     },
     {
-    "firstname" : "Faycalath A.",
-    "lastname" : "OUATTARA",
-    "email" : "faycalath.ouattara@veone.net",
-    "telegram" : "Ouattarafaycalath",
-    "mattermost" : "fouattara"
+    "firstname" : "Diane",
+    "lastname" : "AYEMOU",
+    "email" : "diane.ayemou@veone.net",
+    "telegram" : "dianeA",
+    "team" : "dayemou"
+    },
+    {
+    "firstname" : "Halilou",
+    "lastname" : "DABILA OUATTARA",
+    "email" : "dabila.ouattara@veone.net",
+    "telegram" : "Dhalilou",
+    "team" : "Dhalilou"
+    },
+    {
+   "firstname" : "Cedrick Ceruya Oka",
+   "lastname" : "Baidai",
+   "email" : "cedric.baidai@veone.net",
+   "telegram" : "cedrickoka",
+   "team" : "cedrickoka"
+   },
+   {
+    "firstname" : "KOUAKOU",
+    "lastname" : "N'Guessan Brahiman",
+    "email" : "brahiman.kouakou@veone.net",
+    "telegram" : "brahiman_brahiman",
+    "team" : "brahiman"
+    },
+   {
+    "firstname" : "Renaud",
+    "lastname" : "KOUTOUAN",
+    "email" : "renaud.koutouan@veone.net",
+    "telegram" : "RENAUDK",
+    "team" : "RENAUDK"
+   },
+   {
+    "firstname" : "MAX-WELL",
+    "lastname" : "LE MESSIE 'GOD EAGLE'",
+    "email" : "maxwell.kouadio@veone.net",
+    "telegram" : "touchais",
+    "team" : "mkouadio"
+    },
+    {
+    "firstname" : "Rodolphe",
+    "lastname" : "AGNERO",
+    "email" : "rodolphe.agnero@veone.net",
+    "telegram" : "ragnero",
+    "team" : "ragnero"
+    },
+   {
+    "firstname" : "Yannick",
+    "lastname" : "CODJIA",
+    "email" : "yannick.codjia@veone.net",
+    "telegram" : "yannickc",
+    "team" : "ycodjia"
+    },
+    {
+    "firstname" : "Emmanuel",
+    "lastname" : "NASSAR",
+    "email" : "emmanuel.nassar@veone.net",
+    "telegram" : "enassar",
+    "team" : "enassar"
+    },
+    {
+    "firstname" : "Souleymane",
+    "lastname" : "FANE",
+    "email" : "souleymane.fane@veone.net",
+    "telegram" : "fsouleymane",
+    "team" : "fsouleymane"
+    },
+    {
+    "firstname" : "Yannick",
+    "lastname" : "BONI",
+    "email" : "yannick.boni@veone.net",
+    "telegram" : "yanboni",
+    "team" : "yboni"
+    },
+    {
+    "firstname" : "Irma",
+    "lastname" : "BOUA",
+    "email" : "irma.boua@veone.net",
+    "telegram" : "iBoua",
+    "team" : "iboua"
+    },
+    {
+    "firstname" : "Fabrice",
+    "lastname" : "ASSEMIEN",
+    "email" : "fabrice.assemien@veone.net",
+    "telegram" : "fassemien",
+    "team" : "fassemian"
+    },
+    {
+    "firstname" : "Rita",
+    "lastname" : "KOUDOUGNON",
+    "email" : "rita.koudougnon@veone.net",
+    "telegram" : "kheryta",
+    "team" : "rkoudougnon"
+    },
+    {
+    "firstname" : "Fatim OS",
+    "lastname" : "Nouctjan",
+    "email" : "fatim.ouattara@veone.net",
+    "telegram" : "FatimV1",
+    "team" : "fouattara"
+    },
+    {
+    "firstname" : "Lopez",
+    "lastname" : "DJAGNI",
+    "email" : "lopez.djagni@veone.net",
+    "telegram" : "Lopez Djagni",
+    "team" : "ldjagni"
+    },
+    {
+    "firstname" : "Jessica",
+    "lastname" : "AKASSOU ",
+    "email" : "Jessica.akassou@veone.net",
+    "telegram" : "@jessy225",
+    "team" : "jakassou"
+    },
+    {
+    "firstname" : "jean Fabrice Andy",
+    "lastname" :  "KOUTOUAN",
+    "email" : "jean.koutouan@veone.net",
+    "telegram" : "andykoutouan",
+    "team" : "jkoutouan"
+    },
+    {
+    "firstname" : "Pierre Alain",
+    "lastname" : "KOUAKOU",
+    "email" : "pierre.kouakou@veone.net",
+    "telegram" : "Pierrekouakou7",
+    "team" : "Pierrekouakou7"
+    },
+    {
+    "firstname" : "Cédric",
+    "lastname" : "AGNES",
+    "email" : "cedric.agnes@veone.net",
+    "telegram" : "cedric_agnes",
+    "team" : "cagnes"
+    },
+    {
+    "firstname" : "Hermann",
+    "lastname" : "BASSOLE",
+    "email" : "hermann.bassole@veone.net",
+    "telegram" : "crvshmvn",
+    "team" : "hbassole"
+    },
+    {
+    "firstname" : "Philemon",
+    "lastname" : "GLOBLEHI",
+    "email" : "philemon.globlehi@veone.net",
+    "telegram" : "globlehi",
+    "team" : "pgloblehi"
+    },
+    {
+    "firstname" : "Eliam",
+    "lastname" : "MBAHIA",
+    "email" : "eliam.mbahia@veonedigital.ci",
+    "telegram" : "eliambahia",
+    "team" : "embahia"
+    },
+    {
+    "firstname" : "Alida",
+    "lastname" : "VEITY",
+    "email" : "alida.veity@veonedigital.ci",
+    "telegram" : "aveity",
+    "team" : "aveity"
+    },
+    {
+    "firstname" : "Hermann",
+    "lastname" : "KOFFI",
+    "email" : "hermann.koffi@veonedigital.ci",
+    "telegram" : "HPacome",
+    "team" : "phermann"
+    },
+    {
+    "firstname" : "Aristide",
+    "lastname" : "AMAN",
+    "email" : "aristide.aman@veonedigital.ci",
+    "telegram" : "Aristide_AMAN",
+    "team" : "aaman"
+    },
+    {
+    "firstname" : "Othniel",
+    "lastname" : "M’BAHIA",
+    "email" : "othniel.mbahia@veonedigital.ci",
+    "telegram" : "othnielmbahia",
+    "team" : "Ombahia"
+    },
+    {
+    "firstname" : "happy",
+    "lastname" : "ADZOVI",
+    "email" : "amewuho.adzovi@veonedigital.ci",
+    "telegram" : "@Adzovi",
+    "team" : "hadzovi"
+    },
+    {
+    "firstname" : "Fabien",
+    "lastname" : "DALIGOU",
+    "email" : "fabien.daligou@veonedigital.ci",
+    "telegram" : "FabienDALIGOU",
+    "team" : "fdaligou"
+    },
+    {
+    "firstname" : "Sandrine",
+    "lastname" : "BLEDOU",
+    "email" : "sandrine.bledou@veonedigital.ci",
+    "telegram" : "sandrinebledou",
+    "team" : "sbledou"
+    },
+    {
+    "firstname" : "Adzovi",
+    "lastname" : "AMEWUHO",
+    "email" : "  amewuho.adzovi@veonedigital.ci",
+    "telegram" : "Adzovi ",
+    "team" : "Adzovi "
     }
-    
 ]
