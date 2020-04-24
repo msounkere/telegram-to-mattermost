@@ -129,7 +129,7 @@ def export_telegram(args):
             break
 
         for tlmessage in tlhistory:
-            print("%s \n" % tlmessage)
+
             if tlmessage.fwd_from is not None:
                 tlfwd = []
                 tlfwd.append({
