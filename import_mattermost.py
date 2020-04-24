@@ -239,7 +239,6 @@ def tl_posts_to_mm_posts(tlentity_id,args):
         if tlmsg['media'] == True:
             pathdir = srcdir + '/' + str(tlmsg['id'])
             attached_files_msg = get_attachments(pathdir)
-            print(attached_files_msg)
 
         ## recuperation des reponses en liaison avec le message
         replies_msg = []
@@ -263,6 +262,9 @@ def tl_posts_to_mm_posts(tlentity_id,args):
         if tlmsg['reply_to_msg_id'] == None and tlmsg['action'] == False:
             mmpost_user = get_tl_username_from_file(srcdir,tlmsg['from_id'])
             if args.type == "channel":
+                if tlmsg['message'] == "":
+                    tlmsg['message'] = "---"
+
                 mmpost = {
                     "team": args.mmteam,
                     "channel": args.mmchannel,
