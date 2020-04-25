@@ -1,4 +1,5 @@
 import argparse
+import os
 from export_telegram import export_telegram
 from import_mattermost import import_mattermost
 
@@ -33,7 +34,14 @@ def main():
                 print("eg. shell> python3 migrate.py --type channel --tlusername admin_channel_telegram --tlphone phone_number_admin_channel --tlchannel https://t.me/joinchat/EchPiQ1b7_rOL-3KF0aXuQ --mmteam veone --mmchannel channel_mattermost")
                 exit(0)
     
-    
+    if not os.path.isfile("list.json"):
+        print(">> Error : Fichier list.json introuvable !")
+        exit(0)
+
+    if not os.path.isfile("config.ini"):
+        print(">> Error : Fichier config.ini introuvable !")
+        exit(0)
+
     import_mattermost(export_telegram(args),args)
 if __name__ == "__main__":
     main()
