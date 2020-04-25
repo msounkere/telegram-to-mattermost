@@ -39,6 +39,23 @@ shell> git clone https://git.veone.net/msounkere/telegram-to-mattermost.git
 shell>  cd telegram-to-mattermost
 shell>  touch list.json
 ```
+- Créer le ficher config.ini à la racine de votre dossier telegram-mattermost
+```config
+[Telegram]
+# you can get telegram development credentials in telegram API Development Tools
+api_id = 1235828
+api_hash = abddd05fb22cbfcdafcaaf71e7 
+bot_token = 1245537034:AAGT1eFrduosnSWevNgNwH0zuYhD0
+media_files = media
+limit = 10
+total_count_limit = 25
+
+[Mattermost]
+url_server = https://team.domain.net/api
+team = veone
+bearer_token = 7dtdqudmr46jkn53hm1o
+mattermost_cli = /mattermost/bin/mattermost
+```
 - Preparer le contenu comme ci-dessous et l'y ajouter
 ```json
 [
