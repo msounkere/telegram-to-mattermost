@@ -40,6 +40,16 @@ class DateTimeEncoder(json.JSONEncoder):
             return list(o)
 
         return json.JSONEncoder.default(self, o)
+        
+def init_dir(destdir):
+    for root, dirs, files in os.walk(destdir):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
+
+    if not os.path.exists(destdir):
+        os.makedirs(destdir)
 
 def init_tl_user(args):
     tlphone = args.tlphone
@@ -419,41 +429,11 @@ def import_mmposts(tlentity_id,mmall_posts):
     print(">> Fin de la migration")
     print("------------------------------------------------------------------------------------------------")
 
-def export_telegram(args):
-
-    client = init_tl_user(args)
-    
-    ## check action process
-    if args.type == "chat":
-        if "https://t.me" not in args.tlchat:
-            tluser_input_entity = args.tlchat
-        else:
-            print(">> Error: Vous tentez de migrer une conversation, Veuillez définir le channel de destination option --tlchat username")
-            exit(0)
-
-    if args.type == "channel":
-        if "https://t.me" in args.tlchannel:
-            tluser_input_entity = args.tlchannel
-        else:
-            print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
-            exit(0)
-
-    # me = client.get_me()
-    tlentity = client.get_entity(tluser_input_entity)
-
-    ## Reinitialisation du repertoire de donnée
-    destdir = media_files + "/" + str(tlentity.id)
-    
-    for root, dirs, files in os.walk(destdir):
-        for f in files:
-            os.unlink(os.path.join(root, f))
-        for d in dirs:
-            shutil.rmtree(os.path.join(root, d))
-
-    if not os.path.exists(destdir):
-        os.makedirs(destdir)
+def get_tlparticipants(client,tlentity,args):
 
     tlentity_name = utils.get_display_name(tlentity)
+    destdir = media_files + "/" + str(tlentity.id)
+    
     print("------------------------------------------------------------------------------------------------")
     print(">> Collecte des informations de Chanel/User/Chat : " + tlentity_name)
     print("------------------------------------------------------------------------------------------------\n")
@@ -479,21 +459,21 @@ def export_telegram(args):
 
     with open(destdir + '/user_data.json', 'w') as outfile:
         json.dump(tlall_user_details, outfile)
-    
-    check_match_users(destdir)
 
+def get_tl_messages(client,tlentity):
+
+    destdir = media_files + "/" + str(tlentity.id)
     tlall_messages = []
     tloffset_id = 0
     tltotal_messages = 0
-    print(">> Get All messages\n")
 
+    print(">> Get All messages\n")
     while True:
         tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
         if not tlhistory:
             break
 
         for tlmessage in tlhistory:
-
             if tlmessage.fwd_from is not None:
                 tlfwd = []
                 tlfwd.append({
@@ -503,7 +483,6 @@ def export_telegram(args):
                 })
             else:
                 tlfwd = None
-
             if tlmessage.media is not None:
                 is_media = True
                 mediadir = destdir + "/" + str(tlmessage.id)
@@ -512,12 +491,10 @@ def export_telegram(args):
                 tlmessage.download_media(file=mediadir)
             else:
                 is_media = False
-
             if tlmessage.action is not None:
                 is_action = True
             else:
                 is_action = False
-
 
             tlall_messages.append({
                 "id": tlmessage.id,
@@ -540,6 +517,37 @@ def export_telegram(args):
         # json.dump(all_messages, outfile, cls=DateTimeEncoder)
         json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
+def export_telegram(args):
+
+    client = init_tl_user(args)
+    ## check action process
+    if args.type == "chat":
+        if "https://t.me" not in args.tlchat:
+            tluser_input_entity = args.tlchat
+        else:
+            print(">> Error: Vous tentez de migrer une conversation, Veuillez définir le channel de destination option --tlchat username")
+            exit(0)
+
+    if args.type == "channel":
+        if "https://t.me" in args.tlchannel:
+            tluser_input_entity = args.tlchannel
+        else:
+            print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
+            exit(0)
+
+    # me = client.get_me()
+    tlentity = client.get_entity(tluser_input_entity)
+
+    ## Reinitialisation du repertoire de donnée
+    destdir = media_files + "/" + str(tlentity.id)
+    init_dir(destdir)
+    tlentity_name = utils.get_display_name(tlentity)
+    # Generation du fichier des participants
+    get_tlparticipants(client,tlentity,args)
+    # Controle de l'existance des utilisateurs
+    check_match_users(destdir)
+    get_tl_messages(client,tlentity)
+
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n")
     return {"tlentity_id": tlentity.id,"tlentity_name": tlentity_name}
@@ -560,13 +568,10 @@ def import_mattermost(tlentity_info,args):
     if args.type == "channel":
         ## Traitement des channels pour importation
         mmchannel_id = tlentity_to_mmchannel(mmteam_id,tlentity_name,args)
-        
         ## Traitement des utilisateurs pour importation
         tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args)
-
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-
         ## Generation du fichier d'import!
         import_mmposts(tlentity_id,mmall_posts)
 
@@ -574,10 +579,8 @@ def import_mattermost(tlentity_info,args):
 
         ## Traitement des utilisateurs pour importation
         tluser_to_mmusers("",mmteam_id,tlentity_id,args)
-
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-
         ## Generation du fichier d'import!
         import_mmposts(tlentity_id,mmall_posts)
 
