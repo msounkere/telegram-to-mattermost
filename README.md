@@ -7,7 +7,7 @@
 4. Disposer de la version 3.7 de python
 
 ## 1 -  Mise en place de l'environnement
-
+- Installation et configuration des packets
 ```bash
 # Dans le cas des env Docker la commande ci-dessous vous permettra de vous connecter à votre docker
 shell> docker exec -it -u 2000 mattermost-docker_app_1 /bin/sh
@@ -27,19 +27,11 @@ shell> pip3 install telethon
 shell> update-alternatives --config python
 ```
 
-## 2 - Migration des données
-
-- Déploiement du script
-```bash
-shell> git clone https://git.veone.net/msounkere/telegram-to-mattermost.git
-```
-- Préparer le fichier de mapping des comptes utilisateurs sous le format ci-dessous (list.json)
-
+- Créer le ficher config.ini à la racine de votre dossier telegram-mattermost
 ```bash
 shell>  cd telegram-to-mattermost
 shell>  touch list.json
 ```
-- Créer le ficher config.ini à la racine de votre dossier telegram-mattermost
 ```config
 [Telegram]
 # you can get telegram development credentials in telegram API Development Tools
@@ -55,6 +47,19 @@ url_server = https://team.domain.net/api
 team = veone
 bearer_token = 7dtdqudmr46jkn53hm1o
 mattermost_cli = /mattermost/bin/mattermost
+```
+
+## 2 - Migration des données
+
+- Déploiement du script
+```bash
+shell> git clone https://git.veone.net/msounkere/telegram-to-mattermost.git
+```
+- Préparer le fichier de mapping des comptes utilisateurs sous le format ci-dessous (list.json)
+
+```bash
+shell>  cd telegram-to-mattermost
+shell>  touch list.json
 ```
 - Preparer le contenu comme ci-dessous et l'y ajouter
 ```json
