@@ -176,6 +176,6 @@ def export_telegram(args):
         # json.dump(all_messages, outfile, cls=DateTimeEncoder)
         json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
-    print("\n>> Done")
+    print(">> Done")
     print("------------------------------------------------------------------------------------------------\n")
     return {"tlentity_id": tlentity.id,"tlentity_name": tlentity_name}
