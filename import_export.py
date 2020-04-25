@@ -520,9 +520,13 @@ def get_tl_messages(client,tlentity):
 
             # add inactive users
             if get_tl_username_from_file(destdir,tlmessage.from_id) is None:
-                inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
-                add_tlinactive_user(destdir,inactive_tluser)
+                tluser_id  = get_tl_username_from_file(destdir,tlmessage.from_id)
+                if tlmessage.from_id != tluser_id:
+                    inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
+                    add_tlinactive_user(destdir,inactive_tluser)
 
+            # print(client.get_entity(PeerUser(360206578)))
+            # exit(0)
             tlall_messages.append({
                 "id": tlmessage.id,
                 "date": tlmessage.date,
