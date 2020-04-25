@@ -1,6 +1,8 @@
 import argparse
 import os
-from import_export import export_telegram, import_mattermost
+
+from import_export import export_telegram
+from import_export import import_mattermost
 
 def main():
     #fileDir = os.path.dirname(os.path.realpath('__file__'))

@@ -41,6 +41,30 @@ class DateTimeEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, o)
 
+def init_tl_user(args):
+    tlphone = args.tlphone
+    tlusername = args.tlusername
+
+    # Create the client and connect
+    client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
+    if client.start(phone=tlphone):
+        client.takeout()
+        print("\n>> Authentification reussie pour le user : " + tlusername)
+        print("------------------------------------------------------------------------------------------------\n")
+    else:
+        print("\n>> Echec de l'authentification pour le user : " + tlusername)
+        print("------------------------------------------------------------------------------------------------\n")
+
+    # Ensure you're authorized
+    if not client.is_user_authorized():
+        client.send_code_request(tlphone)
+        try:
+            client.sign_in(tlphone, input('Enter the code: '))
+        except SessionPasswordNeededError:
+            client.sign_in(password=input('Password: '))
+
+    return client
+
 def callback(current, total):
     print('>>>>>>>> Downloaded', current, 'out of', total,
           'bytes: {:.2%}'.format(current / total))
@@ -397,27 +421,8 @@ def import_mmposts(tlentity_id,mmall_posts):
 
 def export_telegram(args):
 
-    tlphone = args.tlphone
-    tlusername = args.tlusername
-
-    # Create the client and connect
-    client = TelegramClient(tlusername, tlapi_id, tlapi_hash)
-    if client.start(phone=tlphone):
-        client.takeout()
-        print("\n>> Authentification reussie pour le user : " + tlusername)
-        print("------------------------------------------------------------------------------------------------\n")
-    else:
-        print("\n>> Echec de l'authentification pour le user : " + tlusername)
-        print("------------------------------------------------------------------------------------------------\n")
-
-    # Ensure you're authorized
-    if not client.is_user_authorized():
-        client.send_code_request(tlphone)
-        try:
-            client.sign_in(tlphone, input('Enter the code: '))
-        except SessionPasswordNeededError:
-            client.sign_in(password=input('Password: '))
-
+    client = init_tl_user(args)
+    
     ## check action process
     if args.type == "chat":
         if "https://t.me" not in args.tlchat:
@@ -435,7 +440,6 @@ def export_telegram(args):
 
     # me = client.get_me()
     tlentity = client.get_entity(tluser_input_entity)
-    tlentity_name = utils.get_display_name(tlentity)
 
     ## Reinitialisation du repertoire de donnée
     destdir = media_files + "/" + str(tlentity.id)
@@ -449,6 +453,7 @@ def export_telegram(args):
     if not os.path.exists(destdir):
         os.makedirs(destdir)
 
+    tlentity_name = utils.get_display_name(tlentity)
     print("------------------------------------------------------------------------------------------------")
     print(">> Collecte des informations de Chanel/User/Chat : " + tlentity_name)
     print("------------------------------------------------------------------------------------------------\n")
