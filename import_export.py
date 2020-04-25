@@ -474,6 +474,9 @@ def get_tl_messages(client,tlentity):
             break
 
         for tlmessage in tlhistory:
+            print(tlmessage)
+            print("---------------------\n")
+            
             if tlmessage.fwd_from is not None:
                 tlfwd = []
                 tlfwd.append({
