@@ -52,7 +52,7 @@ def run_mmbulk_commands(srcdir):
         if os.path.isfile(current_channel_jsonfile):
             
             print(">> Lancement de l'importation des données dans Mattermost")
-            print("------------------------------------------------------------------------------------------------\n")
+            print("------------------------------------------------------------------------------------------------")
 
             status, result = subprocess.getstatusoutput("mattermost version")
             if status == False:
@@ -218,7 +218,7 @@ def add_user_to_mmchannel(mmchannel_id,mmuser_id):
 def tlentity_to_mmchannel(mmteam_id,tlentity_name,args):
     print("------------------------------------------------------------------------------------------------")
     print(">> Creation du Channel tl " + tlentity_name + " dans MM " + args.mmchannel)
-    print("------------------------------------------------------------------------------------------------\n")
+    print("------------------------------------------------------------------------------------------------")
 
     ## Control de l'existance du groupe de destination/ Creer le groupe si inexistant
     mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
@@ -242,7 +242,7 @@ def tlentity_to_mmchannel(mmteam_id,tlentity_name,args):
 
 def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print(">> Migration des Utilisateurs pour importation des données du channel")
-    print("------------------------------------------------------------------------------------------------\n")
+    print("------------------------------------------------------------------------------------------------")
 
     dir_users = media_files + "/" + str(tlentity_id)
     # Check list machtes 
@@ -371,7 +371,7 @@ def import_mmposts(tlentity_id,mmall_posts):
 
     print("\n------------------------------------------------------------------------------------------------")
     print(">> Fin de la migration")
-    print("------------------------------------------------------------------------------------------------\n")
+    print("------------------------------------------------------------------------------------------------")
 
 def import_mattermost(tlentity_info,args):
 
