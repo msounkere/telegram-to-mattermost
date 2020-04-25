@@ -115,7 +115,7 @@ def check_match_users(dir_users):
         else:
             tlusername_null.append(tluser['first_name'] + "" + tluser['last_name'])
 
-    print(mmusername_list)
+    print(tlusername_notfound)
     if len(tlusername_null) > 0:
         print(">>>> Error: Les utilisateurs suivants ont des usernames non définis dans Télégram %s" %tlusername_null)
         exit(0)
