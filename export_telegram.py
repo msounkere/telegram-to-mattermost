@@ -117,64 +117,66 @@ def export_telegram(args):
 
     with open(destdir + '/user_data.json', 'w') as outfile:
         json.dump(tlall_user_details, outfile)
-        
-    tlall_messages = []
-    tloffset_id = 0
-    tltotal_messages = 0
-    print(">> Get All messages\n")
+    
+    # check_match_users(dir_users):
 
-    while True:
-        tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
-        if not tlhistory:
-            break
+    # tlall_messages = []
+    # tloffset_id = 0
+    # tltotal_messages = 0
+    # print(">> Get All messages\n")
 
-        for tlmessage in tlhistory:
+    # while True:
+    #     tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
+    #     if not tlhistory:
+    #         break
 
-            if tlmessage.fwd_from is not None:
-                tlfwd = []
-                tlfwd.append({
-                    "date": tlmessage.fwd_from.date,
-                    "from_id": tlmessage.fwd_from.from_id,
-                    "from_name": tlmessage.fwd_from.from_name
-                })
-            else:
-                tlfwd = None
+    #     for tlmessage in tlhistory:
 
-            if tlmessage.media is not None:
-                is_media = True
-                mediadir = destdir + "/" + str(tlmessage.id)
-                if not os.path.exists(mediadir):
-                    os.makedirs(mediadir)
-                tlmessage.download_media(file=mediadir)
-            else:
-                is_media = False
+    #         if tlmessage.fwd_from is not None:
+    #             tlfwd = []
+    #             tlfwd.append({
+    #                 "date": tlmessage.fwd_from.date,
+    #                 "from_id": tlmessage.fwd_from.from_id,
+    #                 "from_name": tlmessage.fwd_from.from_name
+    #             })
+    #         else:
+    #             tlfwd = None
 
-            if tlmessage.action is not None:
-                is_action = True
-            else:
-                is_action = False
+    #         if tlmessage.media is not None:
+    #             is_media = True
+    #             mediadir = destdir + "/" + str(tlmessage.id)
+    #             if not os.path.exists(mediadir):
+    #                 os.makedirs(mediadir)
+    #             tlmessage.download_media(file=mediadir)
+    #         else:
+    #             is_media = False
+
+    #         if tlmessage.action is not None:
+    #             is_action = True
+    #         else:
+    #             is_action = False
 
 
-            tlall_messages.append({
-                "id": tlmessage.id,
-                "date": tlmessage.date,
-                "message": tlmessage.message,
-                "from_id": tlmessage.from_id,
-                "fwd_from": tlfwd,
-                "reply_to_msg_id": tlmessage.reply_to_msg_id,
-                "media": is_media,
-                "action": is_action
-            })
+    #         tlall_messages.append({
+    #             "id": tlmessage.id,
+    #             "date": tlmessage.date,
+    #             "message": tlmessage.message,
+    #             "from_id": tlmessage.from_id,
+    #             "fwd_from": tlfwd,
+    #             "reply_to_msg_id": tlmessage.reply_to_msg_id,
+    #             "media": is_media,
+    #             "action": is_action
+    #         })
 
-        tloffset_id = tlhistory[len(tlhistory) - 1].id
-        tltotal_messages = len(tlall_messages)
-        print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
-        if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
-            break
+    #     tloffset_id = tlhistory[len(tlhistory) - 1].id
+    #     tltotal_messages = len(tlall_messages)
+    #     print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
+    #     if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
+    #         break
 
-    with open(destdir + '/channel_messages.json', 'w') as outfile:
-        # json.dump(all_messages, outfile, cls=DateTimeEncoder)
-        json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
+    # with open(destdir + '/channel_messages.json', 'w') as outfile:
+    #     # json.dump(all_messages, outfile, cls=DateTimeEncoder)
+    #     json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n")
