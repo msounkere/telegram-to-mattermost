@@ -9,6 +9,9 @@ from datetime import date, datetime
 from telethon import TelegramClient , events, sync
 from telethon.errors import SessionPasswordNeededError
 from telethon import utils
+from telethon.tl.types import (
+    PeerUser
+)
 
 # Reading Configs
 config = configparser.ConfigParser()
@@ -30,7 +33,6 @@ url_server = config['Mattermost']['url_server']
 bearer_token = config['Mattermost']['bearer_token']
 mattermost_cli = config['Mattermost']['mattermost_cli']
 
-# some functions to parse json date
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):   # pylint: disable=E0202
         if isinstance(o, datetime):
@@ -121,6 +123,8 @@ def run_mmbulk_commands(srcdir):
                 cmd = "%s import bulk --worker 4 " % mattermost_cli 
                 print(">>>> Pour terminer executer manuellement la commande ci-dessous")
                 print(">>>> shell> " + cmd + current_channel_jsonfile + " --apply")
+        else:
+            print(">>>> FIchier mattermost_data.json introuvable !")
 
 def timestamp_from_date(date):
     d = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
@@ -135,6 +139,23 @@ def get_attachments(pathdir):
             "path": pathdir + '/' + attachement,
         })
     return attachements
+
+def dump_tlusers(destdir,data):
+    with open(destdir + '/user_data.json', 'w') as outfile:
+        json.dump(data, outfile)
+
+def add_tlinactive_user(dir_users,tluser):
+    tlusers = load_tl_users(dir_users)
+    tlusers.append({
+        "id": tluser.id,
+        "first_name": tluser.first_name,
+        "last_name": tluser.last_name,
+        "user": tluser.username,
+        "phone": tluser.phone,
+        "is_bot": tluser.bot,
+        "status": "inactive"
+    })
+    dump_tlusers(dir_users,tlusers)
 
 def get_mmuser_from_file(tl_user):
     
@@ -319,13 +340,14 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
                 mmuser_id = get_mmuser_id(mmuser['mattermost'])
 
                 # join User to Team
-                print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-                add_user_to_mmteam(mmteam_id, mmuser_id)
+                if(tluser['status'] == "active"):
+                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
+                    add_user_to_mmteam(mmteam_id, mmuser_id)
 
-                if args.type == "channel":
-                    # join User to group
-                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                    add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                    if args.type == "channel":
+                        # join User to group
+                        print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+                        add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
@@ -454,11 +476,11 @@ def get_tlparticipants(client,tlentity,args):
             "last_name": tlparticipant.last_name,
             "user": tlparticipant.username,
             "phone": tlparticipant.phone,
-            "is_bot": tlparticipant.bot
+            "is_bot": tlparticipant.bot,
+            "status": "active"
         })
 
-    with open(destdir + '/user_data.json', 'w') as outfile:
-        json.dump(tlall_user_details, outfile)
+    dump_tlusers(destdir,tlall_user_details)
 
 def get_tl_messages(client,tlentity):
 
@@ -474,9 +496,6 @@ def get_tl_messages(client,tlentity):
             break
 
         for tlmessage in tlhistory:
-            print(tlmessage)
-            print("---------------------\n")
-            
             if tlmessage.fwd_from is not None:
                 tlfwd = []
                 tlfwd.append({
@@ -498,6 +517,11 @@ def get_tl_messages(client,tlentity):
                 is_action = True
             else:
                 is_action = False
+
+            # add inactive users
+            if get_tl_username_from_file(destdir,tlmessage.from_id) is None:
+                inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
+                add_tlinactive_user(destdir,inactive_tluser)
 
             tlall_messages.append({
                 "id": tlmessage.id,
@@ -576,7 +600,7 @@ def import_mattermost(tlentity_info,args):
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
         ## Generation du fichier d'import!
-        import_mmposts(tlentity_id,mmall_posts)
+        # import_mmposts(tlentity_id,mmall_posts)
 
     if args.type == "chat":
 
@@ -585,5 +609,5 @@ def import_mattermost(tlentity_info,args):
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
         ## Generation du fichier d'import!
-        import_mmposts(tlentity_id,mmall_posts)
+        # import_mmposts(tlentity_id,mmall_posts)
 
