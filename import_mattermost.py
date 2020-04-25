@@ -17,7 +17,31 @@ bearer_token = config['Mattermost']['bearer_token']
 mattermost_cli = config['Mattermost']['mattermost_cli']
 
 currentdir = os.getcwd()
+current_list_dir = currentdir + "/list.json"
+
 media_files = currentdir + "/" + config['Telegram']['media_files']
+
+def load_tl_users(dir_users):
+    current_channel_dir = dir_users + "/user_data.json"
+    if os.path.isfile(current_channel_dir):
+        with open(current_channel_dir) as tlusers_file:
+            tlusers = json.load(tlusers_file)
+    
+        return tlusers
+    else:
+        print(">> Error : Fichier user_data.json introuvable !")
+        exit(0)
+
+def load_mm_users():
+    if os.path.isfile(current_list_dir):
+        with open(current_list_dir) as mmusers_file:
+            mmusers = json.load(mmusers_file)
+    
+        return mmusers
+    else:
+        print(">> Error : Fichier list.json introuvable !")
+        exit(0)
+
 
 def run_mmbulk_commands(srcdir):
 
@@ -55,10 +79,9 @@ def get_attachments(pathdir):
     return attachements
 
 def get_mmuser_from_file(tl_user):
-    current_list_dir = currentdir + "/list.json"
-
+    
     if os.path.isfile(current_list_dir):
-        with open("list.json") as tlusers_file:
+        with open(current_list_dir) as tlusers_file:
             tlusers = json.load(tlusers_file)
             for tluser in tlusers:
                 if tluser['telegram'] == tl_user:
@@ -67,14 +90,39 @@ def get_mmuser_from_file(tl_user):
         print(">> Error : Fichier list.json introuvable !")
         exit(0)
 
-
-
 def get_tl_username_from_file(dir_users,id):
-    with open(dir_users + '/user_data.json') as tlusers_file:
-        tlusers = json.load(tlusers_file)
-        for tluser in tlusers:
-            if tluser['id'] == id:
-                return tluser['user']
+   
+    tlusers = load_tl_users(dir_users)
+    for tluser in tlusers:
+        if tluser['id'] == id:
+            return tluser['user']
+
+def check_match_users(dir_users):
+
+    tlusers = load_tl_users(dir_users)
+    mmusers = load_mm_users()
+    mmusername_list = []
+    tlusername_null = []
+    tlusername_notfound = []
+
+    for mmuser in mmusers:
+        mmusername_list.append(mmuser['mattermost'])
+
+    for tluser in tlusers:
+        if tluser['user'] != None:
+            if tluser['user'] not in mmusername_list:
+                tlusername_notfound.append(tluser['user'])
+        else:
+            tlusername_null.append(tluser['first_name'] + "" + tluser['last_name'])
+
+    if len(tlusername_null) > 0:
+        print(">>>> Error: Les utilisateurs suivants ont des usernames non définis dans Télégram %s" %tlusername_null)
+        exit(0)
+    
+    if len(tlusername_notfound) > 0:
+        print(">>>> Error: Les utilisateurs suivantes sont introuvables dans le fichier list.json %s" %tlusername_notfound)
+        exit(0)
+
 
 def get_mmteam_id(mmteam_name):
     url = url_server + "/v4/teams/name/" + mmteam_name
@@ -196,39 +244,32 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print(">> Migration des Utilisateurs pour importation des données du channel")
     print("------------------------------------------------------------------------------------------------\n")
 
-    srcdir = media_files + "/" + str(tlentity_id)
-    with open(srcdir + '/user_data.json') as tlusers_file:
-        tlusers = json.load(tlusers_file)
-    
-    current_list_dir = currentdir + "/list.json"
+    dir_users = media_files + "/" + str(tlentity_id)
+    # Check list machtes 
+    check_match_users(dir_users)
 
-    if os.path.isfile(current_list_dir):
-        with open("list.json") as mmusers_file:
-            mmusers = json.load(mmusers_file)
+    tlusers = load_tl_users(dir_users)
+    mmusers = load_mm_users()
 
-        for mmuser in mmusers:
-            for tluser in tlusers:
-                if mmuser['telegram'] == tluser['user']:
+    for mmuser in mmusers:
+        for tluser in tlusers:
+            if mmuser['telegram'] == tluser['user']:
 
-                    # Create required users
-                    print(">>>> Verification ou création du compte : " + mmuser['email'])
-                    create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
+                # Create required users
+                print(">>>> Verification ou création du compte : " + mmuser['email'])
+                create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
 
-                    # get userid
-                    mmuser_id = get_mmuser_id(mmuser['mattermost'])
+                # get userid
+                mmuser_id = get_mmuser_id(mmuser['mattermost'])
 
-                    # join User to Team
-                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-                    add_user_to_mmteam(mmteam_id, mmuser_id)
+                # join User to Team
+                print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
+                add_user_to_mmteam(mmteam_id, mmuser_id)
 
-                    if args.type == "channel":
-                        # join User to group
-                        print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                        add_user_to_mmchannel(mmchannel_id, mmuser_id)
-    else:
-        print(">> Error : Fichier list.json introuvable !")
-        exit(0)
-
+                if args.type == "channel":
+                    # join User to group
+                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+                    add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")

@@ -30,9 +30,10 @@ shell> update-alternatives --config python
 - Créer le ficher config.ini à la racine de votre dossier telegram-mattermost
 ```bash
 shell>  cd telegram-to-mattermost
-shell>  touch list.json
+shell>  touch config.ini
 ```
 ```config
+# Ajouter le contenu ci-dessous dans votre fichier et le configurer
 [Telegram]
 # you can get telegram development credentials in telegram API Development Tools
 api_id = 1235828
