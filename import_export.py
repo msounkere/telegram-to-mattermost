@@ -494,7 +494,7 @@ def tl_posts_to_mm_posts(tlentity_id,args):
 
         
         print(">>>> Transfer du message : " + str(mmmsg) + "/" + str(mmtotal_messages))
-        print("%s\n" %mmall_posts)
+        print("%s\n" %mmpost)
     return mmall_posts
 
 def import_mmposts(tlentity_id,mmall_posts,args):
