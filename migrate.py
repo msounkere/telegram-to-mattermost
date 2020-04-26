@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--tlchat", type=str)
     parser.add_argument("--mmteam", type=str)
     parser.add_argument("--mmchannel", type=str)
+    parser.add_argument("--dry-run", action='store_true')
     # parser.add_argument("--mmusername", type=str)
     # parser.add_argument("--mmpassword", type=str)
     args = parser.parse_args()
@@ -34,7 +35,7 @@ def main():
                 print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n--tlchannel\n--mmteam\n--mmchannel")
                 print("eg. shell> python3 migrate.py --type channel --tlusername admin_channel_telegram --tlphone phone_number_admin_channel --tlchannel https://t.me/joinchat/EchPiQ1b7_rOL-3KF0aXuQ --mmteam veone --mmchannel channel_mattermost")
                 exit(0)
-    
+
     if not os.path.isfile("list.json"):
         print(">> Error : Fichier list.json introuvable !")
         exit(0)

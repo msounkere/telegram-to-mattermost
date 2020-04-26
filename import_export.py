@@ -345,7 +345,9 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
 
                 # Create required users
                 print(">>>> Verification ou création du compte : " + mmuser['email'])
-                create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
+                
+                if not args.dry_run:
+                    create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
 
                 # get userid
                 mmuser_id = get_mmuser_id(mmuser['mattermost'])
@@ -353,12 +355,16 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
                 # join User to Team
                 if(tluser['status'] == "active"):
                     print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-                    add_user_to_mmteam(mmteam_id, mmuser_id)
+
+                    if not args.dry_run:
+                        add_user_to_mmteam(mmteam_id, mmuser_id)
 
                     if args.type == "channel":
                         # join User to group
                         print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-                        add_user_to_mmchannel(mmchannel_id, mmuser_id)
+
+                        if not args.dry_run:
+                            add_user_to_mmchannel(mmchannel_id, mmuser_id)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
@@ -493,7 +499,7 @@ def get_tlparticipants(client,tlentity,args):
 
     dump_tlusers(destdir,tlall_user_details)
 
-def get_tl_messages(client,tlentity):
+def get_tl_messages(client,tlentity,args):
 
     destdir = media_files + "/" + str(tlentity.id)
     tlall_messages = []
@@ -521,7 +527,8 @@ def get_tl_messages(client,tlentity):
                 mediadir = destdir + "/" + str(tlmessage.id)
                 if not os.path.exists(mediadir):
                     os.makedirs(mediadir)
-                tlmessage.download_media(file=mediadir)
+                if not args.dry_run:
+                    tlmessage.download_media(file=mediadir)
             else:
                 is_media = False
             if tlmessage.action is not None:
@@ -587,7 +594,7 @@ def export_telegram(args):
     # Generation du fichier des participants
     get_tlparticipants(client,tlentity,args)
     # Recuperation de l'emsemble des messages
-    get_tl_messages(client,tlentity)
+    get_tl_messages(client,tlentity,args)
     # Controle de l'existance des utilisateurs (recherche des participants inexistants dans le channel)
     check_match_users(destdir)
 
@@ -615,8 +622,10 @@ def import_mattermost(tlentity_info,args):
         tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-        ## Generation du fichier d'import!
-        import_mmposts(tlentity_id,mmall_posts)
+
+        if not args.dry_run:
+            ## Generation du fichier d'import!
+            import_mmposts(tlentity_id,mmall_posts)
 
     if args.type == "chat":
 
@@ -624,6 +633,8 @@ def import_mattermost(tlentity_info,args):
         tluser_to_mmusers("",mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-        ## Generation du fichier d'import!
-        import_mmposts(tlentity_id,mmall_posts)
+
+        if not args.dry_run:
+            ## Generation du fichier d'import!
+            import_mmposts(tlentity_id,mmall_posts)
 
