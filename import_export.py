@@ -368,6 +368,17 @@ def tlentity_to_mmchannel(mmteam_id,tlentity_name,args):
     print("------------------------------------------------------------------------------------------------\n\n")
     return mmchannel_id
 
+def join_mmuser_to_mattermost(mmchannel_id,mmteam_id,mmuser_id,mmuser,status,args):
+    # join User to Team or channel
+    if(status == "active"):
+        print(">>>> - Ajout de l'utilisateur %s à la TEAM : %s" %(mmuser['mattermost'],args.mmteam))
+        add_user_to_mmteam(mmteam_id, mmuser_id)
+
+        if args.type == "channel":
+            # join User to group
+            print(">>>> - Ajout de l'utilisateur %s au channel : %s \n" %(mmuser['mattermost'],args.mmchannel))
+            add_user_to_mmchannel(mmchannel_id, mmuser_id)
+
 
 def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print(">> Migration des Utilisateurs pour importation des données du channel")
@@ -383,30 +394,24 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
             if mmuser['telegram'] == tluser['user']:
 
                 # Create required users
-                print("\n>>>> Verification ou création du compte : " + mmuser['email'])
+                print(">>>> Vérification ou création du compte : %s" %mmuser['email'])
 
                 # get userid
                 mmuser_id = get_mmuser_id(mmuser['mattermost'])
 
-                if mmuser_id is False:
+                if mmuser_id == False:
                     if not args.dry_run:
                         if create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname']) == True:
-                            # join User to Team
-                            if(tluser['status'] == "active"):
-                                print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-
-                                if not args.dry_run:
-                                    add_user_to_mmteam(mmteam_id, mmuser_id)
-
-                                if args.type == "channel":
-                                    # join User to group
-                                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
-
-                                    if not args.dry_run:
-                                        add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                            mmuser_id = get_mmuser_id(mmuser['mattermost'])
+                            # join User to Team or channel
+                            join_mmuser_to_mattermost(mmchannel_id,mmteam_id,mmuser_id,mmuser,tluser['status'],args)
                         else:
                             print(">>>> Error: L'Utilisateur %s n'a pas pu être crée dans le système !" %mmuser['mattermost'])
                             exit(0)
+                else:
+                    if not args.dry_run:
+                        # join User to Team or channel
+                        join_mmuser_to_mattermost(mmchannel_id,mmteam_id,mmuser_id,mmuser,tluser['status'],args)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
