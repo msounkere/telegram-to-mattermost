@@ -101,8 +101,7 @@ def load_mm_users():
     else:
         print(">> Error : Fichier list.json introuvable !")
         exit(0)
-
-
+    
 def run_mmbulk_commands(srcdir):
 
     ## Get mmchannel list json file
@@ -147,7 +146,7 @@ def dump_tlusers(destdir,data):
 def add_tlinactive_user(dir_users,tluser):
     tlusers = load_tl_users(dir_users)
     # Track username : Null
-    if tlusers.username == None:
+    if tlusers.user == None:
         tlusers.append({
             "id": tluser.id,
             "first_name": "John",
@@ -167,7 +166,7 @@ def add_tlinactive_user(dir_users,tluser):
             "is_bot": tluser.bot,
             "status": "inactive"
         })
-        
+
     dump_tlusers(dir_users,tlusers)
 
 def get_mmuser_from_file(tl_user):
@@ -624,7 +623,7 @@ def import_mattermost(tlentity_info,args):
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
         ## Generation du fichier d'import!
-        # import_mmposts(tlentity_id,mmall_posts)
+        import_mmposts(tlentity_id,mmall_posts)
 
     if args.type == "chat":
 
@@ -633,5 +632,5 @@ def import_mattermost(tlentity_info,args):
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
         ## Generation du fichier d'import!
-        # import_mmposts(tlentity_id,mmall_posts)
+        import_mmposts(tlentity_id,mmall_posts)
 

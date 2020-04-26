@@ -108,6 +108,8 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 >>>> shell> /mattermost/bin/mattermost import bulk /home/msounkere/projects/telegram-to-mattermost/media/1192446106/mattermost_data.json --apply
 ```
 Vous retrouverez toutes vos conversations dans Mattermost !!!
+NB : Tous les utilisateurs inconnus dans Télégram sont remplacés par un utilisateur Jhon DOE (jdoe)
 
   
 ## 3 - FIN
+
