@@ -628,8 +628,8 @@ def import_mattermost(tlentity_info,args):
         print(">>>> Error : Team: " + args.mmteam + " Introuvable")
         exit(0)
 
-    ## check action process
     if args.type == "channel":
+
         ## Traitement des channels pour importation
         mmchannel_id = tlentity_to_mmchannel(mmteam_id,tlentity_name,args)
         ## Traitement des utilisateurs pour importation
@@ -640,7 +640,7 @@ def import_mattermost(tlentity_info,args):
         import_mmposts(tlentity_id,mmall_posts,args)
 
     if args.type == "chat":
-
+        
         ## Traitement des utilisateurs pour importation
         tluser_to_mmusers("",mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
