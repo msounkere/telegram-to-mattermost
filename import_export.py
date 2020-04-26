@@ -205,14 +205,10 @@ def check_match_users(dir_users):
     for mmuser in mmusers:
         mmusername_list.append(mmuser['telegram'])
 
-    print(tlusers)
     for tluser in tlusers:
-        print(tluser['user'])
         if tluser['user'] not in mmusername_list:
             tlusername_notfound.append(tluser['user'])
-    
-    print(tlusername_notfound)
-    exit(0)
+   
     if len(tlusername_notfound) > 0:
         print(">>>> Error: Les utilisateurs suivants sont introuvables dans le fichier list.json %s" %tlusername_notfound)
         exit(0)
@@ -590,9 +586,10 @@ def export_telegram(args):
     tlentity_name = utils.get_display_name(tlentity)
     # Generation du fichier des participants
     get_tlparticipants(client,tlentity,args)
-    # Controle de l'existance des utilisateurs
-    check_match_users(destdir)
+    # Recuperation de l'emsemble des messages
     get_tl_messages(client,tlentity)
+    # Controle de l'existance des utilisateurs (recherche des participants inexistants dans le channel)
+    check_match_users(destdir)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n")
