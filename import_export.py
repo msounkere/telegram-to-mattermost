@@ -201,13 +201,21 @@ def check_match_users(dir_users):
     mmusers = load_mm_users()
     mmusername_list = []
     tlusername_notfound = []
+    tlusername_null =[]
 
     for mmuser in mmusers:
         mmusername_list.append(mmuser['telegram'])
 
     for tluser in tlusers:
-        if tluser['user'] not in mmusername_list and tluser['user'] not in tlusername_notfound:
-            tlusername_notfound.append(tluser['user'])
+        if tluser['user'] != None:
+            if tluser['user'] not in mmusername_list and tluser['user'] not in tlusername_notfound:
+                tlusername_notfound.append(tluser['user'])
+        else:
+            tlusername_null.append(tluser['first_name'] + "" + tluser['last_name'])
+            
+    if len(tlusername_null) > 0:
+        print(">>>> Error: Les utilisateurs suivants ont des usernames non définis dans Télégram %s" %tlusername_null)
+        exit(0)
    
     if len(tlusername_notfound) > 0:
         print(">>>> Error: Les utilisateurs suivants sont introuvables dans le fichier list.json %s" %tlusername_notfound)
@@ -470,7 +478,7 @@ def import_mmposts(tlentity_id,mmall_posts,args):
 
     else:
         print("\n------------------------------------------------------------------------------------------------")
-        print(">> Fin de la migration\n")
+        print(">> Fin de la migration")
         print(">> NB : Aucune modification n'a été apporté sur le système")
         print("------------------------------------------------------------------------------------------------")
 
