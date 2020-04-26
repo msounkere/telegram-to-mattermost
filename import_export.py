@@ -430,7 +430,7 @@ def tl_posts_to_mm_posts(tlentity_id,args):
     mmtotal_messages = len(tlmsgs)
     mmall_posts = []
     for tlmsg in tlmsgs:
-        mmpost = ""
+        mmpost = []
         mmmsg += 1
         # Generation du fichier JSON d'import des données
         ## recuperation des medias du message
