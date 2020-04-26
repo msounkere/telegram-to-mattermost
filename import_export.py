@@ -146,15 +146,28 @@ def dump_tlusers(destdir,data):
 
 def add_tlinactive_user(dir_users,tluser):
     tlusers = load_tl_users(dir_users)
-    tlusers.append({
-        "id": tluser.id,
-        "first_name": tluser.first_name,
-        "last_name": tluser.last_name,
-        "user": tluser.username,
-        "phone": tluser.phone,
-        "is_bot": tluser.bot,
-        "status": "inactive"
-    })
+    # Track username : Null
+    if tlusers.username == None:
+        tlusers.append({
+            "id": tluser.id,
+            "first_name": "John",
+            "last_name": "DOE",
+            "user": "jdoe",
+            "phone": "",
+            "is_bot": tluser.bot,
+            "status": "inactive"
+        })
+    else:
+        tlusers.append({
+            "id": tluser.id,
+            "first_name": tluser.first_name,
+            "last_name": tluser.last_name,
+            "user": tluser.username,
+            "phone": tluser.phone,
+            "is_bot": tluser.bot,
+            "status": "inactive"
+        })
+        
     dump_tlusers(dir_users,tlusers)
 
 def get_mmuser_from_file(tl_user):
