@@ -200,23 +200,17 @@ def check_match_users(dir_users):
     tlusers = load_tl_users(dir_users)
     mmusers = load_mm_users()
     mmusername_list = []
-    tlusername_null = []
     tlusername_notfound = []
 
     for mmuser in mmusers:
         mmusername_list.append(mmuser['telegram'])
 
     for tluser in tlusers:
-        if tluser['user'] != None:
-            if tluser['user'] not in mmusername_list:
-                tlusername_notfound.append(tluser['user'])
-        else:
-            tlusername_null.append(tluser['first_name'] + "" + tluser['last_name'])
-
-    if len(tlusername_null) > 0:
-        print(">>>> Error: Les utilisateurs suivants ont des usernames non définis dans Télégram %s" %tlusername_null)
-        exit(0)
+        if tluser['user'] not in mmusername_list:
+            tlusername_notfound.append(tluser['user'])
     
+    print(tlusername_notfound)
+    exit(0)
     if len(tlusername_notfound) > 0:
         print(">>>> Error: Les utilisateurs suivants sont introuvables dans le fichier list.json %s" %tlusername_notfound)
         exit(0)
