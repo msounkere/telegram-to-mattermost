@@ -146,7 +146,7 @@ def dump_tlusers(destdir,data):
 def add_tlinactive_user(dir_users,tluser):
     tlusers = load_tl_users(dir_users)
     # Track username : Null
-    if tlusers.user == None:
+    if tluser.username == None:
         tlusers.append({
             "id": tluser.id,
             "first_name": "John",
