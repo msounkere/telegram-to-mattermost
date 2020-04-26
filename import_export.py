@@ -493,7 +493,7 @@ def tl_posts_to_mm_posts(tlentity_id,args):
                 })
         
         print(">>>> Transfer du message : " + str(mmmsg) + "/" + str(mmtotal_messages))
-    print(mmall_posts)
+
     return mmall_posts
 
 def import_mmposts(tlentity_id,mmall_posts,args):
@@ -505,7 +505,7 @@ def import_mmposts(tlentity_id,mmall_posts,args):
             filehandle.writelines('{"type":"version","version":1}\n')
             filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
         
-        os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
+        # os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
         print(">> Done")
         print("------------------------------------------------------------------------------------------------\n")
         ## Generation de la commande d'import des données
