@@ -51,8 +51,8 @@ def init_dir(destdir,args):
             for d in dirs:
                 shutil.rmtree(os.path.join(root, d))
 
-        if not os.path.exists(destdir):
-            os.makedirs(destdir)
+    if not os.path.exists(destdir):
+        os.makedirs(destdir)
 
 def init_tl_user(args):
     tlphone = args.tlphone
@@ -505,7 +505,6 @@ def import_mmposts(tlentity_id,mmall_posts,args):
             filehandle.writelines('{"type":"version","version":1}\n')
             filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
         
-        # os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
         print(">> Done")
         print("------------------------------------------------------------------------------------------------\n")
         ## Generation de la commande d'import des données
