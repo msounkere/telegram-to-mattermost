@@ -223,13 +223,14 @@ def check_match_users(dir_users):
 
 
 def get_mmteam_id(mmteam_name):
-    url = url_server + "/v4/teams/name/" + mmteam_name
+    url =  "%s/v4/teams/name/%s" %(url_server,mmteam_name)
     payload = {}
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
+        'Authorization': 'Bearer %s' %bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
     mmteam = resp.json()
+    
     if resp.status_code == 200:
         return mmteam['id']
     else:
@@ -237,62 +238,87 @@ def get_mmteam_id(mmteam_name):
     
 
 def get_mmuser_id(mmusername):
-    url = url_server + "/v4/users/username/" + mmusername
+    url = "%s/v4/users/username/%s" %(url_server,mmusername)
     payload = {}
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
+        'Authorization': 'Bearer %s' %bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
     mmuser = resp.json()
+    
     if resp.status_code == 200:
         return mmuser['id']
     else:
         return False
 
 def get_mmchannel_id(mmteam_id,mmchannel_name):
-    url = url_server + "/v4/teams/" + mmteam_id + "/channels/name/" + mmchannel_name
+    url = "%s/v4/teams/%s/channels/name/%s" %(url_server,mmteam_id,mmchannel_name)
     payload = {}
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
+        'Authorization': 'Bearer %s' %bearer_token,
     }
     resp = requests.request("GET", url, headers=headers, data = payload)
     mmchannel = resp.json()
+    
     if resp.status_code == 200:
         return mmchannel['id']
     else:
         return False
 
 def create_mmuser(mmemail,mmusername,mmfirstname,mmlastname):
-    url = url_server + "/v4/users"
-    payload = "{\"email\": \"" + mmemail + "\", \"username\": \"" + mmusername + "\", \"first_name\": \"" + mmfirstname + "\", \"last_name\": \"" + mmlastname + "\", \"password\": \"Default@1545\", \"locale\": \"fr\"}"
+    url =  "%s/v4/users" %url_server
+    payload = {
+        'email': '%s' %mmemail,
+        'username' : '%s' %mmusername,
+        'first_name' : '%s' %mmfirstname,
+        'last_name' : '%s' %mmlastname,
+        'password' : 'Default@1545',
+        'locale' : 'fr'
+    }
+    payload = json.dumps(payload)
+    
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
-    'Content-Type': 'application/json'
+        'Authorization': 'Bearer %s' %bearer_token,
+        'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
+
     if resp.status_code == 400:
         return False
     return True
 
 def create_mmchannel(mmteam_id,mmchannel_name,mmchannel_display_name,mmtype_channel):
-    url = url_server + "/v4/channels"
-    payload = "{\"team_id\": \"" + mmteam_id + "\", \"name\": \"" + mmchannel_name + "\",\"display_name\": \"" + mmchannel_display_name + "\",\"type\": \"" + mmtype_channel + "\"}"
+    url = "%s/v4/channels" %url_server
+    payload = {
+        'team_id': '%s' %mmteam_id,
+        'name' : '%s' %mmchannel_name,
+        'display_name' : '%s' %mmchannel_display_name,
+        'type' : '%s' %mmtype_channel
+    }
+    payload = json.dumps(payload)
+
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
-    'Content-Type': 'application/json'
+        'Authorization': 'Bearer %s' %bearer_token,
+        'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
     mmchannel = resp.json()
+
     if resp.status_code == 400:
         return False
     return mmchannel['id']
 
 def add_user_to_mmteam(mmteam_id, mmuser_id):
-    url = url_server + "/v4/teams/" + mmteam_id + "/members"
-    payload = "{\"team_id\": \"" + mmteam_id + "\", \"user_id\": \"" + mmuser_id + "\"}"
+    url = "%s/v4/teams/%s/members" %(url_server,mmteam_id)
+    payload = {
+        'team_id': '%s' %mmteam_id,
+        'user_id' : '%s' %mmuser_id
+    }
+    payload = json.dumps(payload)
+
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
-    'Content-Type': 'application/json'
+        'Authorization': 'Bearer %s' %bearer_token,
+        'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
     
@@ -300,13 +326,16 @@ def add_user_to_mmteam(mmteam_id, mmuser_id):
         return False
     return True
 
-
 def add_user_to_mmchannel(mmchannel_id,mmuser_id):
     url = url_server + "/v4/channels/" + mmchannel_id + "/members"
-    payload = "{\"user_id\": \"" + mmuser_id + "\"}"
+    payload = {
+        'user_id': '%s' %mmuser_id
+    }
+    payload = json.dumps(payload)
+
     headers = {
-    'Authorization': 'Bearer ' + bearer_token,
-    'Content-Type': 'application/json'
+        'Authorization': 'Bearer %s' %bearer_token,
+        'Content-Type': 'application/json'
     }
     resp = requests.request("POST", url, headers=headers, data = payload)
     if resp.status_code == 400:
@@ -320,10 +349,12 @@ def tlentity_to_mmchannel(mmteam_id,tlentity_name,args):
 
     ## Control de l'existance du groupe de destination/ Creer le groupe si inexistant
     mmchannel_id = get_mmchannel_id(mmteam_id,args.mmchannel)
+    
     if not mmchannel_id:
         # Creation du canal
         print(">>>> Creation du channel car inexistant ...\n")
-        result = create_mmchannel(mmteam_id,args.mmchannel,args.mmchannel,"P")
+        print(tlentity_name.encode('utf-8'))
+        result = create_mmchannel(mmteam_id,args.mmchannel,tlentity_name,"P")
 
         if not result:
             print(">>>> Error: La création automatique du groupe " + args.mmchannel + " à échouée pour une raison inconnue")
@@ -352,7 +383,7 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
             if mmuser['telegram'] == tluser['user']:
 
                 # Create required users
-                print(">>>> Verification ou création du compte : " + mmuser['email'])
+                print("\n>>>> Verification ou création du compte : " + mmuser['email'])
 
                 if not args.dry_run:
                     create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
@@ -360,19 +391,23 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
                 # get userid
                 mmuser_id = get_mmuser_id(mmuser['mattermost'])
 
-                # join User to Team
-                if(tluser['status'] == "active"):
-                    print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
-
-                    if not args.dry_run:
-                        add_user_to_mmteam(mmteam_id, mmuser_id)
-
-                    if args.type == "channel":
-                        # join User to group
-                        print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+                if mmuser_id is not False:
+                    # join User to Team
+                    if(tluser['status'] == "active"):
+                        print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " à la TEAM : " + args.mmteam)
 
                         if not args.dry_run:
-                            add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                            add_user_to_mmteam(mmteam_id, mmuser_id)
+
+                        if args.type == "channel":
+                            # join User to group
+                            print(">>>> Contrôle / Ajout de l'utilisateur " + mmuser['mattermost'] + " au channel : " + args.mmchannel)
+
+                            if not args.dry_run:
+                                add_user_to_mmchannel(mmchannel_id, mmuser_id)
+                else:
+                    print(">>>> Error: L'Utilisateur %s n'a pas pu être crée dans le système !" %mmuser['mattermost'])
+                    exit(0)
 
     print(">> Done")
     print("------------------------------------------------------------------------------------------------\n\n")
@@ -640,7 +675,7 @@ def import_mattermost(tlentity_info,args):
         import_mmposts(tlentity_id,mmall_posts,args)
 
     if args.type == "chat":
-        
+
         ## Traitement des utilisateurs pour importation
         tluser_to_mmusers("",mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
