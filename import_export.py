@@ -43,15 +43,16 @@ class DateTimeEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, o)
         
-def init_dir(destdir):
-    for root, dirs, files in os.walk(destdir):
-        for f in files:
-            os.unlink(os.path.join(root, f))
-        for d in dirs:
-            shutil.rmtree(os.path.join(root, d))
+def init_dir(destdir,args):
+    if args.force:
+        for root, dirs, files in os.walk(destdir):
+            for f in files:
+                os.unlink(os.path.join(root, f))
+            for d in dirs:
+                shutil.rmtree(os.path.join(root, d))
 
-    if not os.path.exists(destdir):
-        os.makedirs(destdir)
+        if not os.path.exists(destdir):
+            os.makedirs(destdir)
 
 def init_tl_user(args):
     tlphone = args.tlphone
@@ -555,69 +556,70 @@ def get_tlparticipants(client,tlentity,args):
 def get_tl_messages(client,tlentity,args):
 
     destdir = media_files + "/" + str(tlentity.id)
-    tlall_messages = []
-    tloffset_id = 0
-    tltotal_messages = 0
+    if not os.path.isfile(destdir + '/channel_messages.json'):
+        tlall_messages = []
+        tloffset_id = 0
+        tltotal_messages = 0
 
-    print(">> Get All messages\n")
-    while True:
-        tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
-        if not tlhistory:
-            break
+        print(">> Get All messages\n")
+        while True:
+            tlhistory = client.get_messages(tlentity,offset_id=tloffset_id,limit=int(limit))
+            if not tlhistory:
+                break
 
-        for tlmessage in tlhistory:
-            if tlmessage.fwd_from is not None:
-                tlfwd = []
-                tlfwd.append({
-                    "date": tlmessage.fwd_from.date,
-                    "from_id": tlmessage.fwd_from.from_id,
-                    "from_name": tlmessage.fwd_from.from_name
+            for tlmessage in tlhistory:
+                if tlmessage.fwd_from is not None:
+                    tlfwd = []
+                    tlfwd.append({
+                        "date": tlmessage.fwd_from.date,
+                        "from_id": tlmessage.fwd_from.from_id,
+                        "from_name": tlmessage.fwd_from.from_name
+                    })
+                else:
+                    tlfwd = None
+                if tlmessage.media is not None:
+                    is_media = True
+                    mediadir = destdir + "/" + str(tlmessage.id)
+                    if not os.path.exists(mediadir):
+                        os.makedirs(mediadir)
+                    if not args.dry_run:
+                        tlmessage.download_media(file=mediadir)
+                else:
+                    is_media = False
+                if tlmessage.action is not None:
+                    is_action = True
+                else:
+                    is_action = False
+
+                # add inactive users
+                if get_tl_username_from_file(destdir,tlmessage.from_id) is None:
+                    tluser_id  = get_tl_id_from_file(destdir,tlmessage.from_id)
+                    if tlmessage.from_id != tluser_id:
+                        inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
+                        add_tlinactive_user(destdir,inactive_tluser)
+
+                # print(client.get_entity(PeerUser(360206578)))
+                # exit(0)
+                tlall_messages.append({
+                    "id": tlmessage.id,
+                    "date": tlmessage.date,
+                    "message": tlmessage.message,
+                    "from_id": tlmessage.from_id,
+                    "fwd_from": tlfwd,
+                    "reply_to_msg_id": tlmessage.reply_to_msg_id,
+                    "media": is_media,
+                    "action": is_action
                 })
-            else:
-                tlfwd = None
-            if tlmessage.media is not None:
-                is_media = True
-                mediadir = destdir + "/" + str(tlmessage.id)
-                if not os.path.exists(mediadir):
-                    os.makedirs(mediadir)
-                if not args.dry_run:
-                    tlmessage.download_media(file=mediadir)
-            else:
-                is_media = False
-            if tlmessage.action is not None:
-                is_action = True
-            else:
-                is_action = False
 
-            # add inactive users
-            if get_tl_username_from_file(destdir,tlmessage.from_id) is None:
-                tluser_id  = get_tl_id_from_file(destdir,tlmessage.from_id)
-                if tlmessage.from_id != tluser_id:
-                    inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
-                    add_tlinactive_user(destdir,inactive_tluser)
+            tloffset_id = tlhistory[len(tlhistory) - 1].id
+            tltotal_messages = len(tlall_messages)
+            print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
+            if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
+                break
 
-            # print(client.get_entity(PeerUser(360206578)))
-            # exit(0)
-            tlall_messages.append({
-                "id": tlmessage.id,
-                "date": tlmessage.date,
-                "message": tlmessage.message,
-                "from_id": tlmessage.from_id,
-                "fwd_from": tlfwd,
-                "reply_to_msg_id": tlmessage.reply_to_msg_id,
-                "media": is_media,
-                "action": is_action
-            })
-
-        tloffset_id = tlhistory[len(tlhistory) - 1].id
-        tltotal_messages = len(tlall_messages)
-        print(">>>> Current Offset ID is:", tloffset_id, "; Total Messages:", tltotal_messages)
-        if int(tltotal_count_limit) != 0 and tltotal_messages >= int(tltotal_count_limit):
-            break
-
-    with open(destdir + '/channel_messages.json', 'w') as outfile:
-        # json.dump(all_messages, outfile, cls=DateTimeEncoder)
-        json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
+        with open(destdir + '/channel_messages.json', 'w') as outfile:
+            # json.dump(all_messages, outfile, cls=DateTimeEncoder)
+            json.dump(tlall_messages, outfile, cls=DateTimeEncoder)
 
 def export_telegram(args):
 
@@ -642,7 +644,7 @@ def export_telegram(args):
 
     ## Reinitialisation du repertoire de donnée
     destdir = media_files + "/" + str(tlentity.id)
-    init_dir(destdir)
+    init_dir(destdir,args)
     tlentity_name = utils.get_display_name(tlentity)
     # Generation du fichier des participants
     get_tlparticipants(client,tlentity,args)

@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--mmteam", type=str)
     parser.add_argument("--mmchannel", type=str)
     parser.add_argument("--dry-run", action='store_true')
+    parser.add_argument("--force", action='store_true')
     # parser.add_argument("--mmusername", type=str)
     # parser.add_argument("--mmpassword", type=str)
     args = parser.parse_args()

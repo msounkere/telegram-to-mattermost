@@ -92,11 +92,12 @@ shell> python3 migrate.py --type channel --tlusername msounkere --tlphone +22577
 usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
                   [--tlphone TLPHONE] [--tlchannel TLCHANNEL]
                   [--tlchat TLCHAT] [--mmteam MMTEAM] [--mmchannel MMCHANNEL]
-                  [--dry-run]
+                  [--dry-run] [--force]
 
 --tlusername : Compte telegram admin du channel à migrer
 --tlphone : Numéro de phone telegram admin du channel à migrer
 --dry-run : Permet de parcourir l'ensemble de la migration sans aucune incidence sur Mattermost
+--force : Supprime tous les fichiers téléchargés et force le retéléchargement
 
 # NB : s'il s'agit d'un migration d'une conversation faire les actions suivantes :
 --type chat
