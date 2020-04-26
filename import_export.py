@@ -44,7 +44,10 @@ class DateTimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
         
 def init_dir(destdir,args):
-    if args.force:
+    dry_run_file = "%s/.dry-run" %destdir
+
+    if args.force or os.path.isfile(dry_run_file):
+        
         for root, dirs, files in os.walk(destdir):
             for f in files:
                 os.unlink(os.path.join(root, f))
@@ -53,6 +56,10 @@ def init_dir(destdir,args):
 
     if not os.path.exists(destdir):
         os.makedirs(destdir)
+
+    if args.dry_run:
+        os.mknod(dry_run_file)
+    
 
 def init_tl_user(args):
     tlphone = args.tlphone
