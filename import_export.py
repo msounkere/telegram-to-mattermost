@@ -205,7 +205,9 @@ def check_match_users(dir_users):
     for mmuser in mmusers:
         mmusername_list.append(mmuser['telegram'])
 
+    print(tlusers)
     for tluser in tlusers:
+        print(tluser['user'])
         if tluser['user'] not in mmusername_list:
             tlusername_notfound.append(tluser['user'])
     
