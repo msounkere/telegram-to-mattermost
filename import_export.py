@@ -499,14 +499,15 @@ def tl_posts_to_mm_posts(tlentity_id,args):
 def import_mmposts(tlentity_id,mmall_posts,args):
 
     srcdir = media_files + "/" + str(tlentity_id)
+    ## Generation du fichier d'import!
+    with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
+        filehandle.writelines('{"type":"version","version":1}\n')
+        filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
+    
+    print(">> Done")
+    print("------------------------------------------------------------------------------------------------\n")
+    
     if not args.dry_run:
-        ## Generation du fichier d'import!
-        with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
-            filehandle.writelines('{"type":"version","version":1}\n')
-            filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
-        
-        print(">> Done")
-        print("------------------------------------------------------------------------------------------------\n")
         ## Generation de la commande d'import des données
         run_mmbulk_commands(srcdir)
 
@@ -596,8 +597,6 @@ def get_tl_messages(client,tlentity,args):
                         inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
                         add_tlinactive_user(destdir,inactive_tluser)
 
-                # print(client.get_entity(PeerUser(360206578)))
-                # exit(0)
                 tlall_messages.append({
                     "id": tlmessage.id,
                     "date": tlmessage.date,
