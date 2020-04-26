@@ -176,6 +176,13 @@ def get_tl_username_from_file(dir_users,id):
         if tluser['id'] == id:
             return tluser['user']
 
+def get_tl_id_from_file(dir_users,id):
+   
+    tlusers = load_tl_users(dir_users)
+    for tluser in tlusers:
+        if tluser['id'] == id:
+            return tluser['id']
+
 def check_match_users(dir_users):
 
     tlusers = load_tl_users(dir_users)
@@ -520,7 +527,7 @@ def get_tl_messages(client,tlentity):
 
             # add inactive users
             if get_tl_username_from_file(destdir,tlmessage.from_id) is None:
-                tluser_id  = get_tl_username_from_file(destdir,tlmessage.from_id)
+                tluser_id  = get_tl_id_from_file(destdir,tlmessage.from_id)
                 if tlmessage.from_id != tluser_id:
                     inactive_tluser = client.get_entity(PeerUser(tlmessage.from_id))
                     add_tlinactive_user(destdir,inactive_tluser)
