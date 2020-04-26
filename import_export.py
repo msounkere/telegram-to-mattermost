@@ -206,7 +206,7 @@ def check_match_users(dir_users):
         mmusername_list.append(mmuser['telegram'])
 
     for tluser in tlusers:
-        if tluser['user'] not in mmusername_list:
+        if tluser['user'] not in mmusername_list and tluser['user'] not in tlusername_notfound:
             tlusername_notfound.append(tluser['user'])
    
     if len(tlusername_notfound) > 0:
@@ -345,7 +345,7 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
 
                 # Create required users
                 print(">>>> Verification ou création du compte : " + mmuser['email'])
-                
+
                 if not args.dry_run:
                     create_mmuser(mmuser['email'],mmuser['mattermost'],mmuser['firstname'],mmuser['lastname'])
 
@@ -449,24 +449,30 @@ def tl_posts_to_mm_posts(tlentity_id,args):
     
     return mmall_posts
 
-def import_mmposts(tlentity_id,mmall_posts):
+def import_mmposts(tlentity_id,mmall_posts,args):
 
     srcdir = media_files + "/" + str(tlentity_id)
+    if not args.dry_run:
+        ## Generation du fichier d'import!
+        with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
+            filehandle.writelines('{"type":"version","version":1}\n')
+            filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
+        
+        os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
+        print(">> Done")
+        print("------------------------------------------------------------------------------------------------\n")
+        ## Generation de la commande d'import des données
+        run_mmbulk_commands(srcdir)
 
-    ## Generation du fichier d'import!
-    with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
-        filehandle.writelines('{"type":"version","version":1}\n')
-        filehandle.writelines("%s\n" % json.dumps(mmpost) for mmpost in mmall_posts)
-    
-    os.system('sed -i "$ d" {0}'.format(srcdir + '/mattermost_data.json'))
-    print(">> Done")
-    print("------------------------------------------------------------------------------------------------\n")
-    ## Generation de la commande d'import des données
-    run_mmbulk_commands(srcdir)
+        print("\n------------------------------------------------------------------------------------------------")
+        print(">> Fin de la migration")
+        print("------------------------------------------------------------------------------------------------")
 
-    print("\n------------------------------------------------------------------------------------------------")
-    print(">> Fin de la migration")
-    print("------------------------------------------------------------------------------------------------")
+    else:
+        print("\n------------------------------------------------------------------------------------------------")
+        print(">> Fin de la migration\n")
+        print(">> NB : Aucune modification n'a été apporté sur le système")
+        print("------------------------------------------------------------------------------------------------")
 
 def get_tlparticipants(client,tlentity,args):
 
@@ -622,10 +628,8 @@ def import_mattermost(tlentity_info,args):
         tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-
-        if not args.dry_run:
-            ## Generation du fichier d'import!
-            import_mmposts(tlentity_id,mmall_posts)
+        ## Generation du fichier d'import!
+        import_mmposts(tlentity_id,mmall_posts,args)
 
     if args.type == "chat":
 
@@ -633,8 +637,6 @@ def import_mattermost(tlentity_info,args):
         tluser_to_mmusers("",mmteam_id,tlentity_id,args)
         ## Traitement des conversation pour importation
         mmall_posts = tl_posts_to_mm_posts(tlentity_id,args)
-
-        if not args.dry_run:
-            ## Generation du fichier d'import!
-            import_mmposts(tlentity_id,mmall_posts)
+        ## Generation du fichier d'import!
+        import_mmposts(tlentity_id,mmall_posts,args)
 

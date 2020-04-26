@@ -86,15 +86,17 @@ shell>  touch list.json
 
 ```bash
 shell>  cd telegram-to-mattermost
-shell> python3 migrate.py --type channel --tlusername msounkere --tlphone +2257777727 --tlchannel https://t.me/joinchat/EchPiUcTSJpNHBiI0KI0A --mmteam veone --mmchannel veone_xy
+shell> python3 migrate.py --type channel --tlusername msounkere --tlphone +2257777727 --tlchannel https://t.me/joinchat/EchPiUcTSJpNHBiI0KI0A --mmteam veone --mmchannel veone_xyx --dry-run
 
 # Description des paramètres
 usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
                   [--tlphone TLPHONE] [--tlchannel TLCHANNEL]
-                  [--mmteam MMTEAM] [--mmchannel MMCHANNEL]
+                  [--tlchat TLCHAT] [--mmteam MMTEAM] [--mmchannel MMCHANNEL]
+                  [--dry-run]
 
---tlusername : compte telegram admin du channel à migrer
+--tlusername : Compte telegram admin du channel à migrer
 --tlphone : Numéro de phone telegram admin du channel à migrer
+--dry-run : Permet de parcourir l'ensemble de la migration sans aucune incidence sur Mattermost
 
 # NB : s'il s'agit d'un migration d'une conversation faire les actions suivantes :
 --type chat
