@@ -5,6 +5,7 @@ import shutil
 import requests
 import subprocess
 
+from hashlib import md5
 from datetime import date, datetime
 from telethon import TelegramClient , events, sync
 from telethon.errors import SessionPasswordNeededError
@@ -42,7 +43,38 @@ class DateTimeEncoder(json.JSONEncoder):
             return list(o)
 
         return json.JSONEncoder.default(self, o)
-        
+
+def string_to_hash(text):
+    import hashlib
+    return int(hashlib.sha1(text.encode('utf-8')).hexdigest()[:16], 16)
+
+def get_work_dir(args):
+
+    if args.type == 'chat':
+
+        tlentity_1 = string_to_hash(args.tlusername)
+        tlentity_2 = string_to_hash(args.tlchat)
+
+        tlentity = [
+            "%s_%s" %(tlentity_2,tlentity_1),
+            "%s_%s" %(tlentity_1,tlentity_2)
+        ]
+
+        workdirs = os.listdir(media_files)
+        for workdir in workdirs:
+            for value in tlentity:
+                if workdir == value:
+                    return workdir
+        else:
+            workdir = "%s/%s_%s" %(media_files,tlentity_1,tlentity_2)
+            return workdir
+
+    if args.type == 'channel':
+        tlentity = string_to_hash(args.tlchannel)
+        workdir = "%s/%s" %(media_files,tlentity)
+        return workdir
+    
+
 def init_dir(destdir,args):
     dry_run_file = "%s/.dry-run" %destdir
 
@@ -392,7 +424,7 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print(">> Migration des Utilisateurs pour importation des données du channel")
     print("------------------------------------------------------------------------------------------------")
 
-    dir_users = media_files + "/" + str(tlentity_id)
+    dir_users = get_work_dir(args)
 
     tlusers = load_tl_users(dir_users)
     mmusers = load_mm_users()
@@ -425,7 +457,7 @@ def tluser_to_mmusers(mmchannel_id,mmteam_id,tlentity_id,args):
     print("------------------------------------------------------------------------------------------------\n\n")
 
 def tl_posts_to_mm_posts(tlentity_id,args):
-    srcdir = media_files + "/" + str(tlentity_id)
+    srcdir = get_work_dir(args)
     # print(">> Migration des conversations et  medias vers le channel/chat Mattermost : " + args.mmchannel)
     print("------------------------------------------------------------------------------------------------\n")
     
@@ -505,7 +537,7 @@ def tl_posts_to_mm_posts(tlentity_id,args):
 
 def import_mmposts(tlentity_id,mmall_posts,args):
 
-    srcdir = media_files + "/" + str(tlentity_id)
+    srcdir = get_work_dir(args)
     ## Generation du fichier d'import!
     with open(srcdir + '/mattermost_data.json', 'w') as filehandle:
         filehandle.writelines('{"type":"version","version":1}\n')
@@ -531,7 +563,7 @@ def import_mmposts(tlentity_id,mmall_posts,args):
 def get_tlparticipants(client,tlentity,args):
 
     tlentity_name = utils.get_display_name(tlentity)
-    destdir = media_files + "/" + str(tlentity.id)
+    destdir = get_work_dir(args)
     
     print("------------------------------------------------------------------------------------------------")
     print(">> Collecte des informations de Chanel/User/Chat : " + tlentity_name)
@@ -561,7 +593,7 @@ def get_tlparticipants(client,tlentity,args):
 
 def get_tl_messages(client,tlentity,args):
 
-    destdir = media_files + "/" + str(tlentity.id)
+    destdir = get_work_dir(args)
     if not os.path.isfile(destdir + '/channel_messages.json'):
         tlall_messages = []
         tloffset_id = 0
@@ -647,8 +679,10 @@ def export_telegram(args):
     tlentity = client.get_entity(tluser_input_entity)
 
     ## Reinitialisation du repertoire de donnée
-    destdir = media_files + "/" + str(tlentity.id)
+    destdir = get_work_dir(args)
+    print(destdir)
     init_dir(destdir,args)
+
     tlentity_name = utils.get_display_name(tlentity)
     # Generation du fichier des participants
     get_tlparticipants(client,tlentity,args)
