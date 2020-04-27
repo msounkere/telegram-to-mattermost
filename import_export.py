@@ -64,15 +64,16 @@ def get_work_dir(args):
         for workdir in workdirs:
             for value in tlentity:
                 if workdir == value:
-                    return workdir
+                    absolute_workdir = "%s/%s" %(media_files,workdir)
+                    return absolute_workdir
         else:
-            workdir = "%s/%s_%s" %(media_files,tlentity_1,tlentity_2)
-            return workdir
+            absolute_workdir = "%s/%s_%s" %(media_files,tlentity_1,tlentity_2)
+            return absolute_workdir
 
     if args.type == 'channel':
         tlentity = string_to_hash(args.tlchannel)
-        workdir = "%s/%s" %(media_files,tlentity)
-        return workdir
+        absolute_workdir = "%s/%s" %(media_files,tlentity)
+        return absolute_workdir
     
 
 def init_dir(destdir,args):
