@@ -96,7 +96,7 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 
 --tlusername : Compte telegram admin du channel à migrer
 --tlphone : Numéro de phone telegram admin du channel à migrer
---dry-run : Permet de parcourir l'ensemble de la migration sans aucune incidence sur Mattermost
+--dry-run : Permet de parcourir l\'ensemble de la migration sans aucune incidence sur Mattermost
 --force : Supprime tous les fichiers téléchargés et force le retéléchargement
 
 # NB : s'il s'agit d'un migration d'une conversation faire les actions suivantes :
