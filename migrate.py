@@ -26,7 +26,7 @@ def main():
         exit(0)
     else:
         if args.type == "chat":
-            if args.tlchat == "All":
+            if args.tlchat.lower() == "all":
                 if not args.tlphone or not args.tlusername:
                     print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n")
                     print("eg. shell> python3 migrate.py --type chat --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat All")
