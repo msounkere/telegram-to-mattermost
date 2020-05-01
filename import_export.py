@@ -723,7 +723,6 @@ def export_telegram(args):
     if args.tlchat == "All":
 
         for tluser_input in tluser_input_entity:
-            print(tluser_input)
             args.tlchat = tluser_input
             tlentity = client.get_entity(tluser_input)
             
@@ -776,8 +775,6 @@ def import_mattermost(tlentity_id,tlentity_name,args):
         print(">>>> Error : Team: " + args.mmteam + " Introuvable")
         exit(0)
 
-    print(args.mmteam)
-    exit(0)
     if args.type == "channel":
 
         ## Traitement des channels pour importation
