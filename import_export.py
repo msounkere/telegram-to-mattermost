@@ -33,6 +33,7 @@ tltotal_count_limit = config['Telegram']['total_count_limit']
 url_server = config['Mattermost']['url_server']
 bearer_token = config['Mattermost']['bearer_token']
 mattermost_cli = config['Mattermost']['mattermost_cli']
+team_domain = config['Mattermost']['team_domain']
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):   # pylint: disable=E0202
@@ -210,6 +211,44 @@ def add_tlinactive_user(dir_users,tluser):
 
     dump_tlusers(dir_users,tlusers)
 
+def get_tlallchats(client,args):
+    dialogs = client.get_dialogs(limit=None)
+    tlallusers = []
+    for dialog in dialogs:
+        if "User" in str(dialog.entity) and dialog.entity.username != None and dialog.entity.username != args.tlusername:
+            if check_tluser_from_file(dialog.entity.username):
+                tlallusers.append(dialog.entity.username)
+    return tlallusers
+
+def check_tluser_from_file(tl_user):
+    
+    if os.path.isfile(current_list_dir):
+        with open(current_list_dir) as tlusers_file:
+            tlusers = json.load(tlusers_file)
+            for tluser in tlusers:
+                if tluser['telegram'] == tl_user:
+                    return True
+            else:
+                return False
+    else:
+        print(">> Error : Fichier list.json introuvable !")
+        exit(0)
+
+def auto_get_team(tl_user):
+    teams = eval(team_domain)
+    if os.path.isfile(current_list_dir):
+        with open(current_list_dir) as tlusers_file:
+            tlusers = json.load(tlusers_file)
+            for tluser in tlusers:
+                if tluser['telegram'] == tl_user:
+                    domain = tluser['email'].split('@')[1]
+                    return teams[domain]
+            else:
+                return False
+    else:
+        print(">> Error : Fichier list.json introuvable !")
+        exit(0)
+
 def get_mmuser_from_file(tl_user):
     
     if os.path.isfile(current_list_dir):
@@ -252,7 +291,7 @@ def check_match_users(dir_users):
             if tluser['user'] not in mmusername_list and tluser['user'] not in tlusername_notfound:
                 tlusername_notfound.append(tluser['user'])
         else:
-            tlusername_null.append(tluser['first_name'] + "" + tluser['last_name'])
+            tlusername_null.append("%s %s" %(tluser['first_name'],tluser['last_name']))
             
     if len(tlusername_null) > 0:
         print(">>>> Error: Les utilisateurs suivants ont des usernames non définis dans Télégram %s" %tlusername_null)
@@ -660,14 +699,19 @@ def get_tl_messages(client,tlentity,args):
 
 def export_telegram(args):
 
+    tluser_input_entity = []
     client = init_tl_user(args)
     ## check action process
     if args.type == "chat":
-        if "https://t.me" not in args.tlchat:
-            tluser_input_entity = args.tlchat
+        if args.tlchat == "All":
+            ## Get all users in list.json from telegram
+            tluser_input_entity = get_tlallchats(client,args)
         else:
-            print(">> Error: Vous tentez de migrer une conversation, Veuillez définir le channel de destination option --tlchat username")
-            exit(0)
+            if "https://t.me" not in args.tlchat:
+                tluser_input_entity = args.tlchat
+            else:
+                print(">> Error: Vous tentez de migrer une conversation, Veuillez définir le channel de destination option --tlchat username")
+                exit(0)
 
     if args.type == "channel":
         if "https://t.me" in args.tlchannel:
@@ -676,38 +720,64 @@ def export_telegram(args):
             print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
             exit(0)
 
-    # me = client.get_me()
-    tlentity = client.get_entity(tluser_input_entity)
+    if args.tlchat == "All":
 
-    ## Reinitialisation du repertoire de donnée
-    destdir = get_work_dir(args)
-    print(destdir)
-    init_dir(destdir,args)
+        for tluser_input in tluser_input_entity:
+            print(tluser_input)
+            args.tlchat = tluser_input
+            tlentity = client.get_entity(tluser_input)
+            
+            ## Reinitialisation du repertoire de donnée
+            destdir = get_work_dir(args)
+            print(destdir)
+            init_dir(destdir,args)
 
-    tlentity_name = utils.get_display_name(tlentity)
-    # Generation du fichier des participants
-    get_tlparticipants(client,tlentity,args)
-    # Recuperation de l'emsemble des messages
-    get_tl_messages(client,tlentity,args)
-    # Controle de l'existance des utilisateurs (recherche des participants inexistants dans le channel)
-    check_match_users(destdir)
+            tlentity_name = utils.get_display_name(tlentity)
+            # Generation du fichier des participants
+            get_tlparticipants(client,tlentity,args)
+            # Recuperation de l'emsemble des messages
+            get_tl_messages(client,tlentity,args)
+            # Controle de l'existance des utilisateurs (recherche des participants inexistants dans le channel)
+            check_match_users(destdir)
+            print(">> Done")
+            print("------------------------------------------------------------------------------------------------\n")
+            import_mattermost(tlentity.id,tlentity_name,args)
+    else:
+        ## parse tluser_input_entity
+        # me = client.get_me()
+        tlentity = client.get_entity(tluser_input_entity)
 
-    print(">> Done")
-    print("------------------------------------------------------------------------------------------------\n")
-    return {"tlentity_id": tlentity.id,"tlentity_name": tlentity_name}
+        ## Reinitialisation du repertoire de donnée
+        destdir = get_work_dir(args)
+        print(destdir)
+        init_dir(destdir,args)
+
+        tlentity_name = utils.get_display_name(tlentity)
+        # Generation du fichier des participants
+        get_tlparticipants(client,tlentity,args)
+        # Recuperation de l'emsemble des messages
+        get_tl_messages(client,tlentity,args)
+        # Controle de l'existance des utilisateurs (recherche des participants inexistants dans le channel)
+        check_match_users(destdir)
+        
+        print(">> Done")
+        print("------------------------------------------------------------------------------------------------\n")
+        import_mattermost(tlentity.id,tlentity_name,args)
 
 
-def import_mattermost(tlentity_info,args):
+def import_mattermost(tlentity_id,tlentity_name,args):
 
-    tlentity_name = tlentity_info['tlentity_name']
-    tlentity_id = tlentity_info['tlentity_id']
+    if args.mmteam is None:
+        args.mmteam = auto_get_team(args.tlusername)
 
-    # Check if channel exists
+    # Check if team exists
     mmteam_id = get_mmteam_id(args.mmteam)
     if not mmteam_id:
         print(">>>> Error : Team: " + args.mmteam + " Introuvable")
         exit(0)
 
+    print(args.mmteam)
+    exit(0)
     if args.type == "channel":
 
         ## Traitement des channels pour importation

@@ -102,6 +102,9 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 # NB : s'il s'agit d'un migration d'une conversation faire les actions suivantes :
 --type chat
 --tlchat username_du_correspondant
+Pour recuperer tout les chats d\un utilisateur utliser l\'option --tchat All la deduction des comptes à migrer se fera du fichier list.json
+Ex : python3 migrate.py --type chat --tlusername msounkere --tlphone +2257777727 --tlchat All  --dry-run
+NB : Ne pas pas specifier l\'option --mmteam elle sera déduite automatiquement de l\'email (voir config.ini)
 ```
 
 - Transférer les données dans Mattermost par le méthode BULK JSON

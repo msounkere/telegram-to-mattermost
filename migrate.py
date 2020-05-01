@@ -26,10 +26,16 @@ def main():
         exit(0)
     else:
         if args.type == "chat":
-            if not args.tlchat or not args.tlphone or not args.tlusername or not args.mmteam:
-                print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n--tlchat\n--mmteam")
-                print("eg. shell> python3 migrate.py --type chat --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat username_correspondant --mmteam veone")
-                exit(0)
+            if args.tlchat == "All":
+                if not args.tlphone or not args.tlusername:
+                    print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n")
+                    print("eg. shell> python3 migrate.py --type chat --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat All")
+                    exit(0)
+            else:
+                if not args.tlchat or not args.tlphone or not args.tlusername or not args.mmteam:
+                    print("\nLes options suivantes sont obligatoires :\n--tlusername\n--tlphone\n--tlchat\n--mmteam")
+                    print("eg. shell> python3 migrate.py --type chat --tlusername usertelegram --tlphone phone_number_usertelegram --tlchat username_correspondant --mmteam veone")
+                    exit(0)
 
         if args.type == "channel":
             if not args.tlchannel or not args.tlphone or not args.tlusername or not args.mmteam or not args.mmchannel:
@@ -45,7 +51,7 @@ def main():
         print(">> Error : Fichier config.ini introuvable !")
         exit(0)
 
-    import_mattermost(export_telegram(args),args)
+    export_telegram(args)
 
     
 
