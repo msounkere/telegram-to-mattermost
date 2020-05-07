@@ -701,7 +701,7 @@ def export_telegram(args):
 
     tluser_input_entity = []
     client = init_tl_user(args)
-    chat_all = false
+    chat_all = False
     ## check action process
     if args.type == "chat":
         if "https://t.me" in args.tlchat:
@@ -711,7 +711,7 @@ def export_telegram(args):
         if args.tlchat.lower() == "all":
             ## Get all users in list.json from telegram
             tluser_input_entity = get_tlallchats(client,args)
-            chat_all = true
+            chat_all = True
         else:
             tluser_input_entity = args.tlchat
 
