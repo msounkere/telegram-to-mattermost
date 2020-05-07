@@ -701,6 +701,7 @@ def export_telegram(args):
 
     tluser_input_entity = []
     client = init_tl_user(args)
+    chat_all = false
     ## check action process
     if args.type == "chat":
         if "https://t.me" in args.tlchat:
@@ -710,6 +711,7 @@ def export_telegram(args):
         if args.tlchat.lower() == "all":
             ## Get all users in list.json from telegram
             tluser_input_entity = get_tlallchats(client,args)
+            chat_all = true
         else:
             tluser_input_entity = args.tlchat
 
@@ -720,7 +722,7 @@ def export_telegram(args):
             print(">> Error: Vous tentez de migrer un channel, Veuillez définir le channel de destination option --tlchannel https://t.me....")
             exit(0)
 
-    if args.tlchat.lower() == "all":
+    if chat_all:
 
         for tluser_input in tluser_input_entity:
             args.tlchat = tluser_input
