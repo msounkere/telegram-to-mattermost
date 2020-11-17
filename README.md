@@ -68,14 +68,14 @@ shell>  touch list.json
   {
     "firstname": "Firstname E.",
     "lastname": "NAME FAMILY",
-    "email": "email@veone.net",
+    "email": "email@domaine.net",
     "telegram": "username",
     "mattermost": "username"
   },
   {
     "firstname": "Firstname E.",
     "lastname": "NAME FAMILY",
-    "email": "email@veone.net",
+    "email": "email@domaine.net",
     "telegram": "username",
     "mattermost": "username"
   }
@@ -86,7 +86,7 @@ shell>  touch list.json
 
 ```bash
 shell>  cd telegram-to-mattermost
-shell> python3 migrate.py --type channel --tlusername msounkere --tlphone +2257777727 --tlchannel https://t.me/joinchat/EchPiUcTSJpNHBiI0KI0A --mmteam veone --mmchannel veone_xyx --dry-run
+shell> python3 migrate.py --type channel --tlusername username --tlphone +225xxxxxxxx --tlchannel https://t.me/joinchat/xxxxxxxxxxxx --mmteam veone --mmchannel veone_xyx --dry-run
 
 # Description des paramètres
 usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
@@ -106,7 +106,7 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 #Pour recuperer tout les chats d\un utilisateur utliser l\'option "--tchat All" la deduction des comptes à migrer se fera à partir du fichier list.json
 #Ne pas pas specifier l\'option --mmteam elle sera déduite automatiquement de l\'email (voir config.ini)
 
-Ex : python3 migrate.py --type chat --tlusername username --tlphone +2257777727 --tlchat All  --dry-run
+Ex : python3 migrate.py --type chat --tlusername username --tlphone +225xxxxxxxx --tlchat All  --dry-run
 
 ```
 
