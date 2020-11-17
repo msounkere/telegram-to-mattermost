@@ -36,9 +36,9 @@ shell>  touch config.ini
 # Ajouter le contenu ci-dessous dans votre fichier et le configurer
 [Telegram]
 # you can get telegram development credentials in telegram API Development Tools
-api_id = 1235828
-api_hash = abddd05fb22cbfcdafcaaf71e7 
-bot_token = 1245537034:AAGT1eFrduosnSWevNgNwH0zuYhD0
+api_id = xxxx-api_id
+api_hash = xxxx-hash
+bot_token = xxxx-token
 media_files = media
 limit = 10
 total_count_limit = 25
@@ -46,7 +46,7 @@ total_count_limit = 25
 [Mattermost]
 url_server = https://team.domain.net/api
 team = veone
-bearer_token = 7dtdqudmr46jkn53hm1o
+bearer_token = xxxx-token
 mattermost_cli = /mattermost/bin/mattermost
 ```
 
@@ -106,7 +106,7 @@ usage: migrate.py [-h] [--type TYPE] [--tlusername TLUSERNAME]
 #Pour recuperer tout les chats d\un utilisateur utliser l\'option "--tchat All" la deduction des comptes à migrer se fera à partir du fichier list.json
 #Ne pas pas specifier l\'option --mmteam elle sera déduite automatiquement de l\'email (voir config.ini)
 
-Ex : python3 migrate.py --type chat --tlusername msounkere --tlphone +2257777727 --tlchat All  --dry-run
+Ex : python3 migrate.py --type chat --tlusername username --tlphone +2257777727 --tlchat All  --dry-run
 
 ```
 
